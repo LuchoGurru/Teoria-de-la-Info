@@ -87,7 +87,7 @@ public class Nodo implements Comparable<Nodo>{
 
     @Override
     public String toString() {
-        return "Nodo{" + "cant=" + cant + ", padre=" + padre + ", c=" + c + ", codigo=" + codigo + ", h1=" + h1 + ", h0=" + h0 + '}';
+        return "Nodo{" + "cant=" + cant + ", c=" + c + ", codigo=" + codigo + '}';
     }
        
     public static void crearListaDeFrecuencia(File archivo){
@@ -114,7 +114,7 @@ public class Nodo implements Comparable<Nodo>{
             ArrayList<Nodo> frecsNodos = new ArrayList<>();
             for(Character c: claves){
                 frecuencias.replace(c, frecuencias.get(c)/totalCaracteres); // Transformo cantidades en frecuencias.
-                frecsNodos.add(new Nodo(c,frecuencias.get(c)/totalCaracteres));//Voy creando los nodos para dejarlos ordenados en la linea de abajo 
+                frecsNodos.add(new Nodo(c,frecuencias.get(c)));//Voy creando los nodos para dejarlos ordenados en la linea de abajo 
             }
             Collections.sort(frecsNodos);//Ordeno de menor a mayor
             i=0;
@@ -123,6 +123,9 @@ public class Nodo implements Comparable<Nodo>{
             }
             Nodo raiz = getArbol(frecsNodos);
             System.out.println("raiz = " + raiz);
+            raiz.setCodigo("");
+            raiz.codificar(raiz);
+            System.out.println(raiz.imprimirArbol(raiz, ""));
         } catch (Exception e) {
             e.printStackTrace();
         } finally { // En el finally cerramos el fichero, para asegurarnos que se cierra tanto si todo va bien como si salta excepcion
@@ -152,7 +155,7 @@ public class Nodo implements Comparable<Nodo>{
      */
     public static Nodo getPadre(Nodo a, Nodo b){
         Nodo padre = new Nodo('\0',a.getCant()+b.getCant());
-        if(b.getCant() >= a.getCant()){
+        if(b.getCant() <= a.getCant()){
             padre.setH0(a);
             padre.setH1(b);
         }
@@ -172,53 +175,17 @@ public class Nodo implements Comparable<Nodo>{
      * @return 
      */
     public static Nodo getArbol(ArrayList <Nodo> lista){
-        Nodo padre;
+        Nodo padre,auxh1,auxh0;
         while(lista.size()>1){
-            padre = getPadre(lista.remove(lista.size()-1),lista.remove(lista.size()-1));
+            auxh1 = lista.remove(0);
+            auxh0 = lista.remove(0);
+            padre = getPadre(auxh0,auxh1);
             lista.add(padre);
             Collections.sort(lista);
         }
         return lista.get(0);
     }
-    /**
-     * Recibe la raiz del arbol 
-     * @param raiz
-     * @param tabla
-     * @return 
-    public static String codificar(Nodo raiz){
-        Nodo curAux = raiz;
-        String codigo = "";
-        String retorno = "";
-        
-        while(raiz != null){
-            if(curAux.getH0()!=null){
-                curAux = curAux.getH0();
-                codigo += "0";
-            }else if(curAux.getH1()!=null){
-                curAux = curAux.getH1();
-                codigo += "1";
-            }else if (curAux.getChar() != '\0'){//Distinto de null
-                retorno += curAux.getChar() + codigo + ":";
-                codigo = "";
-                if(curAux.getPadre().getH0() == curAux){
-                    curAux = curAux.getPadre();
-                    curAux.setH0(null);
-                }else{
-                    curAux = curAux.getPadre();
-                    curAux.setH1(null);
-                }
-            }else{
-                if(curAux.getPadre().getH0() == curAux){
-                    curAux = curAux.getPadre();
-                    curAux.setH0(null);
-                }else{
-                    curAux = curAux.getPadre();
-                    curAux.setH1(null);
-                }
-            }
-        }
-        return retorno;
-    }*/
+    
     public String imprimirArbol(Nodo raiz,String tabla){
         if(raiz !=null){
             if(raiz.getH0()==null && raiz.getH1()==null){   //si no tiene hijos 
@@ -270,7 +237,7 @@ public class Nodo implements Comparable<Nodo>{
     public int compareTo(Nodo o) {
         int aux = (int) (1000* this.getCant()) - (int) (1000* o.getCant());
         if (aux ==0){
-            if(this.getChar()<= o.getChar()){
+            if(this.getChar()>= o.getChar()){
                 aux = -1;
             }else{
                 aux = 1;

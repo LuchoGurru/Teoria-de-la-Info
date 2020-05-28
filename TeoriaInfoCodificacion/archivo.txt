@@ -1,6 +1,4 @@
 AAAAAA
 BBB
 CC
-D
-E
 R
