@@ -160,6 +160,8 @@ public class Nodo implements Comparable<Nodo>{
             padre.setH0(b);
             padre.setH1(a);
         }
+        a.setPadre(padre);
+        b.setPadre(padre);
         return padre;
     }
     /**
