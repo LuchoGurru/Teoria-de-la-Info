@@ -101,7 +101,7 @@ public class Nodo implements Comparable<Nodo>{
        
     public static void crearListaDeFrecuencia(File archivo){
         HashMap<Character,Float> frecuencias = new HashMap<>();
-        frecuencias.put('\0',(float)1);
+        frecuencias.put('\0',(float)1); //Le ponemos el caracter que indica fin de archivo
         FileReader fr = null;
         BufferedReader br = null;
         int i = 0; // indice que va a tomar la cantidad de bits de info necesaria por iteracion
@@ -113,19 +113,20 @@ public class Nodo implements Comparable<Nodo>{
             String linea;
             String textoOriginal="";
             boolean primero =true;
-            while ((linea = br.readLine()) != null) {
+            while ((linea = br.readLine()) != null) { 
                 if(primero){
                     primero = false;
                     textoOriginal += linea;
                 }else{
-                    textoOriginal += '\n'+linea;
+                    linea ='\n'+linea;
+                    textoOriginal += linea;
                 }for(i=0;i<linea.length();i++){
                     if((contChars = frecuencias.get(linea.charAt(i)))!=null)
                         frecuencias.put(linea.charAt(i),contChars+1);
                     else 
                         frecuencias.put(linea.charAt(i),(float)1);
                 }
-            }
+            } 
             int totalCaracteres = frecuencias.size();
             Set<Character> claves = (Set<Character>) frecuencias.keySet();
             ArrayList<Nodo> frecsNodos = new ArrayList<>();
@@ -164,10 +165,11 @@ public class Nodo implements Comparable<Nodo>{
         out.write(buf, 0, buf.length); //A la tabla de la escribo como está. 
         ArrayList<Byte> bytesDinamico = new ArrayList<>(); 
         int i; 
-        String biteDe8 = ""; //String que contiene los bits del byte que será convertido en byte eventualmente
-        int libre = 8; //Los bits Disponibles del byte
+        String biteDe8 = "0"; //String que contiene los bits del byte que será convertido en byte eventualmente
+        int libre = 7; //Los bits Disponibles del byte
         for (i = 0; i < texto.length(); i++) {
             int bitsCodigo = diccionario.get(texto.charAt(i)).length();
+         //   System.out.println("biteDe8 = " + biteDe8 + " bitsCodigo " + bitsCodigo + " char " + texto.charAt(i));
             if (libre >= bitsCodigo) { //inicialmente tengo 8 bits libres
                 libre = libre - bitsCodigo; // 8 - longitud del codigoHuffman
                 biteDe8 += diccionario.get(texto.charAt(i));  //append del codigo al byte
@@ -175,14 +177,14 @@ public class Nodo implements Comparable<Nodo>{
                 biteDe8 += diccionario.get(texto.charAt(i)).substring(0, libre); // corto el codigo para tener 8 bits justo
                 byte b = Byte.parseByte(biteDe8, 2);
                 bytesDinamico.add(b);//Agrego al arreglo de bytes a imprimir
-                biteDe8 = diccionario.get(texto.charAt(i)).substring(libre); //Le pongo lo que me sobro al siguiente byte 
-                libre = 8 - (libre - bitsCodigo);    //Steteo el numero de bits libres del byte a crear
+                biteDe8 ="0"+ diccionario.get(texto.charAt(i)).substring(libre); //Le pongo lo que me sobro al siguiente byte 
+                libre = 7 - (bitsCodigo - libre);    //Steteo el numero de bits libres del byte a crear
             }
             if (libre == 0) { //Si biteDe8.length() == 8 entonces agrego un byte al arreglo y libre = 8 
                 byte b = Byte.parseByte(biteDe8, 2);
                 bytesDinamico.add(b);//Agregarlo al arreglo de bytes a imprimir
-                libre = 8;
-                biteDe8 = "";
+                libre = 7;
+                biteDe8 = "0";
             }//Si es distinto de 0 es por q todavia no completo el byte o por que lo complete y lo agregue y de nuevo el segndo no esta completo
         }
         if (!biteDe8.equals("")) { //Si me sobraron bits del codigo
@@ -201,7 +203,6 @@ public class Nodo implements Comparable<Nodo>{
             }
             
         }
-        //Falta poner el caracter nulo 
         buf = getArregloDeBytes(bytesDinamico);
         out.write(buf);
         out.close(); 
