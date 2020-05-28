@@ -160,11 +160,11 @@ public class Nodo implements Comparable<Nodo>{
         OutputStream out = new FileOutputStream(archivo);
         BufferedWriter bw = null;
         byte[] buf = tabla.getBytes();
-        out.write(buf, 0, tabla.getBytes().length); //A la tabla de la escribo como está. 
+        out.write(buf, 0, buf.length); //A la tabla de la escribo como está. 
         ArrayList<Byte> bytesDinamico = new ArrayList<>(); 
         int i; 
-        String biteDe8 = ""; 
-        int libre = 8;
+        String biteDe8 = ""; //String que contiene los bits del byte que será convertido en byte eventualmente
+        int libre = 8; //Los bits Disponibles del byte
         for (i = 0; i < texto.length(); i++) {
             int bitsCodigo = diccionario.get(texto.charAt(i)).length();
             if (libre >= bitsCodigo) { //inicialmente tengo 8 bits libres
