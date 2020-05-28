@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.BitSet;
 import java.util.Random;
 import javax.swing.JOptionPane;
 
@@ -49,8 +50,12 @@ public class frameMenu extends javax.swing.JFrame {
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Nodo.crearListaDeFrecuencia(new File("./archivo.txt"));
+                //Nodo.crearListaDeFrecuencia(new File("./archivo.txt"));
                 //new frameMenu().setVisible(true); 
+                byte b = Byte.parseByte("01100110", 2);
+                BitSet bi = new BitSet(8);
+                bi.toString();
+                System.out.println(b);
             }
         });
     }
