@@ -100,7 +100,8 @@ public class Nodo implements Comparable<Nodo>{
     }
        
     public static void crearListaDeFrecuencia(File archivo){
-        HashMap<Character,Float> frecuencias = new HashMap<>(); 
+        HashMap<Character,Float> frecuencias = new HashMap<>();
+        frecuencias.put('\0',(float)1);
         FileReader fr = null;
         BufferedReader br = null;
         int i = 0; // indice que va a tomar la cantidad de bits de info necesaria por iteracion
@@ -186,6 +187,19 @@ public class Nodo implements Comparable<Nodo>{
         }
         if (!biteDe8.equals("")) { //Si me sobraron bits del codigo
             //Tengo que agregar un ultimo byte rellenarlo y meterle el caracter nulo de fin de archivo. 
+            biteDe8 += diccionario.get('\0');//le agrego el null al final
+            if(biteDe8.length()<=8){//me quedo de 8 bits o menos asi q lo parseo
+                byte b = Byte.parseByte(biteDe8, 2);
+            }
+            else{
+                String aux = biteDe8.substring(0, 8); //Aux tiene un byte en string
+                biteDe8 = biteDe8.substring(8); //Bite tiene lo q le sobro de agregar el null
+                byte b = Byte.parseByte(aux,2);
+                bytesDinamico.add(b);
+                b = Byte.parseByte(biteDe8, 2);
+                bytesDinamico.add(b);
+            }
+            
         }
         //Falta poner el caracter nulo 
         buf = getArregloDeBytes(bytesDinamico);
