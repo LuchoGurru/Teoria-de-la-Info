@@ -6,8 +6,11 @@
 package teoriainfocodificacion;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,7 +27,8 @@ public class Nodo implements Comparable<Nodo>{
     private Nodo h0;
     private char c;
     private String codigo;
- 
+    static int contador = 0;// por ahora no lo uso pero probablemente lo necesite para saber cuantas lineas de TABLA tengo al leer un archivo
+    static HashMap<Character,String> diccionario = new HashMap<>();
     /**
      * No le falta el padre tmb?
      * @param c
@@ -101,8 +105,15 @@ public class Nodo implements Comparable<Nodo>{
             fr = new FileReader(archivo);                                       // creacion de BufferedReader para poder hacer el metodo readLine()).
             br = new BufferedReader(fr);                                        // Lectura del fichero
             String linea;
+            String textoOriginal="";
+            boolean primero =true;
             while ((linea = br.readLine()) != null) {
-                for(i=0;i<linea.length();i++){
+                if(primero){
+                    primero = false;
+                    textoOriginal += linea;
+                }else{
+                    textoOriginal += '\n'+linea;
+                }for(i=0;i<linea.length();i++){
                     if((contChars = frecuencias.get(linea.charAt(i)))!=null)
                         frecuencias.put(linea.charAt(i),contChars+1);
                     else 
@@ -126,6 +137,9 @@ public class Nodo implements Comparable<Nodo>{
             raiz.setCodigo("");
             raiz.codificar(raiz);
             System.out.println(raiz.imprimirArbol(raiz, ""));
+           // raiz.getDiccionario(raiz.imprimirArbol(raiz, ""));
+           contador = 0; //Nota siempre reiniciar el contador antes de imprimir
+           escribirHuffman(textoOriginal,raiz.imprimirArbol(raiz,""));
         } catch (Exception e) {
             e.printStackTrace();
         } finally { // En el finally cerramos el fichero, para asegurarnos que se cierra tanto si todo va bien como si salta excepcion
@@ -135,6 +149,33 @@ public class Nodo implements Comparable<Nodo>{
         }
     } 
     
+    public static void escribirHuffman(String texto,String tabla) throws IOException{
+            File archivo2 = new File("./huffman.txt");//.H
+            BufferedWriter bw=null;
+        try{
+            if(archivo2.exists()){
+                bw = new BufferedWriter(new FileWriter(archivo2));
+            }else{
+                archivo2.createNewFile();
+                bw = new BufferedWriter(new FileWriter(archivo2));
+            }
+            int i=0;
+            bw.write(tabla);
+            for(i=0;i<texto.length();i++){
+                if(diccionario.containsKey(texto.charAt(i)))
+                    bw.write(diccionario.get(texto.charAt(i)));
+                else
+                    bw.write(texto.charAt(i));
+            }
+            bw.close();
+        }catch(Exception e) {
+            e.printStackTrace(); 
+        }finally{
+            if (bw!=null)
+                bw.close();
+        }
+             
+    }
     public byte[] toBytes(boolean[] arregloBits) {
         byte[] aux = new byte[arregloBits.length / 8];
         for(int i = 0; i < aux.length; i++) {
@@ -185,11 +226,13 @@ public class Nodo implements Comparable<Nodo>{
         }
         return lista.get(0);
     }
-    
+
     public String imprimirArbol(Nodo raiz,String tabla){
         if(raiz !=null){
             if(raiz.getH0()==null && raiz.getH1()==null){   //si no tiene hijos 
-                tabla+=raiz.getChar()+raiz.getCodigo()+'\n';//Esto creo que deberiamos transformarlo a bits pero primero lo primero
+                diccionario.put(raiz.getChar(),raiz.getCodigo()); // Arma el diccionario
+                tabla+=raiz.getChar()+raiz.getCodigo()+'\n';//Esto creo que deberiamos transformarlo a bits pero primero lo primero 
+                contador++;
             }
             tabla = imprimirArbol(raiz.getH0(),tabla);
             tabla = imprimirArbol(raiz.getH1(),tabla);        
@@ -197,13 +240,31 @@ public class Nodo implements Comparable<Nodo>{
         return tabla;
     }
     
+    public void getDiccionario(String tabla){
+        String strBits = tabla;//arrToString(tabla.getBytes());
+        HashMap<String,String> diccionario = new HashMap<>();
+        int i = 0 ;
+        for(i=0;i<contador;i++){
+            System.out.println("strBits = " + strBits);
+            String cha = strBits.substring(0,1);  
+            String cod = strBits.substring(1,strBits.indexOf('\n')); 
+            strBits = strBits.substring(strBits.indexOf('\n')+1);
+            System.out.println("strBits1 = " + strBits);
+            diccionario.put(cha, cod);
+        }
+    } 
+    
     
     
     public void leerCodificacion(String tabla){ 
         String strBits = arrToString(tabla.getBytes());//String de bits
+        
+        
+        
+        
     }
     
-        public String arrToString(byte[] b){
+    public String arrToString(byte[] b){
         int i=0;
         String strArray="";
         for(i=0; i< b.length;i++){
