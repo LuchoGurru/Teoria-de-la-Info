@@ -8,10 +8,15 @@ package teoriainfocodificacion;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
@@ -147,10 +152,49 @@ public class Nodo implements Comparable<Nodo>{
         }
     } 
     
-    public static void escribirHuffman(String texto,String tabla) throws IOException{
-            File archivo2 = new File("./huffman.txt");//.H
-            BufferedWriter bw=null;
-        try{
+    public static void escribirHuffman(String texto, String tabla) throws IOException {
+        // byte b = Byte.parseByte("01100110", 2); 
+        // System.out.println(Byte.parseByte("01100110", 2));
+        // System.out.println(tabla.getBytes().length);
+        File archivo = new File("./huffman.txt");//.H
+        OutputStream out = new FileOutputStream(archivo);
+        BufferedWriter bw = null;
+        byte[] buf = tabla.getBytes();
+        out.write(buf, 0, tabla.getBytes().length); //A la tabla de la escribo como está. 
+        ArrayList<Byte> bytesDinamico = new ArrayList<>(); 
+        int i; 
+        String biteDe8 = ""; 
+        int libre = 8;
+        for (i = 0; i < texto.length(); i++) {
+            int bitsCodigo = diccionario.get(texto.charAt(i)).length();
+            if (libre >= bitsCodigo) { //inicialmente tengo 8 bits libres
+                libre = libre - bitsCodigo; // 8 - longitud del codigoHuffman
+                biteDe8 += diccionario.get(texto.charAt(i));  //append del codigo al byte
+            } else { //Lleno el byte pero me sobran bits del codigo
+                biteDe8 += diccionario.get(texto.charAt(i)).substring(0, libre); // corto el codigo para tener 8 bits justo
+                byte b = Byte.parseByte(biteDe8, 2);
+                bytesDinamico.add(b);//Agrego al arreglo de bytes a imprimir
+                biteDe8 = diccionario.get(texto.charAt(i)).substring(libre); //Le pongo lo que me sobro al siguiente byte 
+                libre = 8 - (libre - bitsCodigo);    //Steteo el numero de bits libres del byte a crear
+            }
+            if (libre == 0) { //Si biteDe8.length() == 8 entonces agrego un byte al arreglo y libre = 8 
+                byte b = Byte.parseByte(biteDe8, 2);
+                bytesDinamico.add(b);//Agregarlo al arreglo de bytes a imprimir
+                libre = 8;
+                biteDe8 = "";
+            }//Si es distinto de 0 es por q todavia no completo el byte o por que lo complete y lo agregue y de nuevo el segndo no esta completo
+        }
+        if (!biteDe8.equals("")) { //Si me sobraron bits del codigo
+            //Tengo que agregar un ultimo byte rellenarlo y meterle el caracter nulo de fin de archivo. 
+        }
+        //Falta poner el caracter nulo 
+        buf = getArregloDeBytes(bytesDinamico);
+        out.write(buf);
+        out.close(); 
+    } 
+    
+
+        /*   try{
             if(archivo2.exists()){
                 bw = new BufferedWriter(new FileWriter(archivo2));
             }else{
@@ -171,9 +215,17 @@ public class Nodo implements Comparable<Nodo>{
         }finally{
             if (bw!=null)
                 bw.close();
+        }*/
+    
+    public static byte[] getArregloDeBytes(ArrayList<Byte> arrBytes){
+        byte[] arregloPrimitivo = new byte[arrBytes.size()];
+        int i;
+        for(i =0;i<arrBytes.size();i++){
+            arregloPrimitivo[i]=arrBytes.get(i);
         }
-             
+        return arregloPrimitivo;
     }
+    
     public byte[] toBytes(boolean[] arregloBits) {
         byte[] aux = new byte[arregloBits.length / 8];
         for(int i = 0; i < aux.length; i++) {
