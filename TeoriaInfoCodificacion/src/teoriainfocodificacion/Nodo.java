@@ -136,8 +136,6 @@ public class Nodo implements Comparable<Nodo>{
             System.out.println("raiz = " + raiz);
             raiz.setCodigo("");
             raiz.codificar(raiz);
-            System.out.println(raiz.imprimirArbol(raiz, ""));
-           // raiz.getDiccionario(raiz.imprimirArbol(raiz, ""));
            contador = 0; //Nota siempre reiniciar el contador antes de imprimir
            escribirHuffman(textoOriginal,raiz.imprimirArbol(raiz,""));
         } catch (Exception e) {
@@ -258,10 +256,6 @@ public class Nodo implements Comparable<Nodo>{
     
     public void leerCodificacion(String tabla){ 
         String strBits = arrToString(tabla.getBytes());//String de bits
-        
-        
-        
-        
     }
     
     public String arrToString(byte[] b){
