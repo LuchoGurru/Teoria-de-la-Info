@@ -383,11 +383,16 @@ public class Nodo implements Comparable<Nodo>{
         
         String aux = "";
         String aEscribirEnArchivo = "";
+        bucle:
         for(byte b : bytes){
             for(int i=0; i<8; i++){
                 aux += getBitDeByte(b,i) ? "1" : "0";
                 if(invertido.containsKey(aux)){
-                    aEscribirEnArchivo = aEscribirEnArchivo + invertido.get(aux);
+                    char c = invertido.get(aux);
+                    if(c=='\0'){
+                        break bucle;
+                    }
+                    aEscribirEnArchivo = aEscribirEnArchivo + c;
                     aux = "";
                 }
             }
