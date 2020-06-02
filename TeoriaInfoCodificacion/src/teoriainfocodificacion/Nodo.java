@@ -34,7 +34,6 @@ public class Nodo implements Comparable<Nodo>{
     private Nodo h0;
     private char c;
     private String codigo;
-    static int contador = 0;// por ahora no lo uso pero probablemente lo necesite para saber cuantas lineas de TABLA tengo al leer un archivo
     static HashMap<Character,String> diccionario = new HashMap<>();
     /**
      * No le falta el padre tmb?
@@ -144,9 +143,8 @@ public class Nodo implements Comparable<Nodo>{
             Nodo raiz = getArbol(frecsNodos);
             System.out.println("raiz = " + raiz);
             raiz.setCodigo("");
-            raiz.codificar(raiz);
-           contador = 0; //Nota siempre reiniciar el contador antes de imprimir
-           escribirHuffman(textoOriginal,raiz.imprimirArbol(raiz,""));
+            raiz.codificar(raiz); 
+            escribirHuffman(textoOriginal,raiz.imprimirArbol(raiz,""));
         } catch (Exception e) {
             e.printStackTrace();
         } finally { // En el finally cerramos el fichero, para asegurarnos que se cierra tanto si todo va bien como si salta excepcion
@@ -160,15 +158,17 @@ public class Nodo implements Comparable<Nodo>{
         // byte b = Byte.parseByte("01100110", 2); 
         // System.out.println(Byte.parseByte("01100110", 2));
         // System.out.println(tabla.getBytes().length);
-        File archivo = new File("./huffman.txt");//.H
-        OutputStream out = new FileOutputStream(archivo);
-        BufferedWriter bw = null;
+        File tablaHuffman = new File("./tablaHuff.txt");
+        OutputStream out = new FileOutputStream(tablaHuffman);
         byte[] buf = tabla.getBytes();
-        out.write(buf, 0, buf.length); //A la tabla de la escribo como está. 
+        out.write(buf,0,buf.length); 
+        out.close();//A la tabla de la escribo como está. 
+        File archivo = new File("./huffman.txt");//.H
+        out = new FileOutputStream(archivo);
         ArrayList<Byte> bytesDinamico = new ArrayList<>(); 
         int i; 
-        String biteDe8 = "0"; //String que contiene los bits del byte que será convertido en byte eventualmente
-        int libre = 7; //Los bits Disponibles del byte
+        String biteDe8 = ""; //String que contiene los bits del byte que será convertido en byte eventualmente
+        int libre = 8; //Los bits Disponibles del byte
         for (i = 0; i < texto.length(); i++) {
             int bitsCodigo = diccionario.get(texto.charAt(i)).length();
          //   System.out.println("biteDe8 = " + biteDe8 + " bitsCodigo " + bitsCodigo + " char " + texto.charAt(i));
@@ -177,33 +177,32 @@ public class Nodo implements Comparable<Nodo>{
                 biteDe8 += diccionario.get(texto.charAt(i));  //append del codigo al byte
             } else { //Lleno el byte pero me sobran bits del codigo
                 biteDe8 += diccionario.get(texto.charAt(i)).substring(0, libre); // corto el codigo para tener 8 bits justo
-                byte b = Byte.parseByte(biteDe8, 2);
+                byte b = (byte) Integer.parseInt(biteDe8, 2);
                 bytesDinamico.add(b);//Agrego al arreglo de bytes a imprimir
-                biteDe8 ="0"+ diccionario.get(texto.charAt(i)).substring(libre); //Le pongo lo que me sobro al siguiente byte 
-                libre = 7 - (bitsCodigo - libre);    //Steteo el numero de bits libres del byte a crear
+                biteDe8 = diccionario.get(texto.charAt(i)).substring(libre); //Le pongo lo que me sobro al siguiente byte 
+                libre = 8 - (bitsCodigo - libre);    //Steteo el numero de bits libres del byte a crear
             }
             if (libre == 0) { //Si biteDe8.length() == 8 entonces agrego un byte al arreglo y libre = 8 
-                byte b = Byte.parseByte(biteDe8, 2);
+                byte b = (byte) Integer.parseInt(biteDe8, 2);
                 bytesDinamico.add(b);//Agregarlo al arreglo de bytes a imprimir
-                libre = 7;
-                biteDe8 = "0";
+                libre = 8;
+                biteDe8 = "";
             }//Si es distinto de 0 es por q todavia no completo el byte o por que lo complete y lo agregue y de nuevo el segndo no esta completo
         }
         if (!biteDe8.equals("")) { //Si me sobraron bits del codigo
             //Tengo que agregar un ultimo byte rellenarlo y meterle el caracter nulo de fin de archivo. 
             biteDe8 += diccionario.get('\0');//le agrego el null al final
             if(biteDe8.length()<=8){//me quedo de 8 bits o menos asi q lo parseo
-                byte b = Byte.parseByte(biteDe8, 2);
+                byte b = (byte) Integer.parseInt(biteDe8, 2);
             }
             else{
                 String aux = biteDe8.substring(0, 8); //Aux tiene un byte en string
                 biteDe8 = biteDe8.substring(8); //Bite tiene lo q le sobro de agregar el null
-                byte b = Byte.parseByte(aux,2);
+                byte b = (byte) Integer.parseInt(aux, 2);
                 bytesDinamico.add(b);
-                b = Byte.parseByte(biteDe8, 2);
+                b = (byte) Integer.parseInt(biteDe8, 2);
                 bytesDinamico.add(b);
             }
-            
         }
         buf = getArregloDeBytes(bytesDinamico);
         out.write(buf);
@@ -298,15 +297,14 @@ public class Nodo implements Comparable<Nodo>{
         if(raiz !=null){
             if(raiz.getH0()==null && raiz.getH1()==null){   //si no tiene hijos 
                 diccionario.put(raiz.getChar(),raiz.getCodigo()); // Arma el diccionario
-                tabla+=raiz.getChar()+raiz.getCodigo()+'\n';//Esto creo que deberiamos transformarlo a bits pero primero lo primero 
-                contador++;
+                tabla+=raiz.getChar()+raiz.getCodigo()+'\n';//Esto creo que deberiamos transformarlo a bits pero primero lo primero  
             }
             tabla = imprimirArbol(raiz.getH0(),tabla);
             tabla = imprimirArbol(raiz.getH1(),tabla);        
         }
         return tabla;
     }
-    
+    /*
     public void getDiccionario(String tabla){
         String strBits = tabla;//arrToString(tabla.getBytes());
         HashMap<String,String> diccionario = new HashMap<>();
@@ -320,7 +318,7 @@ public class Nodo implements Comparable<Nodo>{
             diccionario.put(cha, cod);
         }
     } 
-    
+    */
     
     
     public void leerCodificacion(String tabla){ 
@@ -370,24 +368,85 @@ public class Nodo implements Comparable<Nodo>{
         return aux;
     }
     
-    public static void leerHuffman(String pathAleer,String ext){ 
-        // diccionario = new HashMap<>(); aca tengo que llenar el diccionario con el archivo correspondiente, hacete cargo lucho
-        //Aca falta toda la parte de escribir strings en archivo q no me acuerdo y me dio paja
-        
-        HashMap<String,Character> invertido = new HashMap<>();
-        
-        for(Character clave : diccionario.keySet()){
-            invertido.put(diccionario.get(clave), clave);
+    /**
+     * tRADUCE LA TABLA Y TE LA PONE EN EL "DICCIONARIO" QUE ES UN HASHMAP GLOBAL 
+     * @param pathAleer
+     * @param ext 
+     */
+    public static void leerHuffman(String pathAleer,String ext){
+        try{
+            HashMap<String,Character> diccio = new HashMap<>();//Instancio el diccionario
+            File tablaHuffman = new File("./"+pathAleer);// Instancio el Archivo que voy a leer
+          //  File disViejoCopy = new File("./prueba.HUF"); // Copio en el mismo lugar con otro nombre
+            //empieza copiacion
+            InputStream in = new FileInputStream(tablaHuffman);
+       //     OutputStream out = new FileOutputStream(disViejoCopy);
+            byte[] buf = new byte[1024];
+            int len; 
+            //Leo cantidad de palabras de mi diccionario.
+            // len = in.read(); 
+            //int cantidadPalabras = (int) in.read() - 48;
+            //System.out.println("len"+cantidadPalabras);
+            int i=0;
+            String codigo="";
+            char a; 
+            int primerByteLeido;
+            while((primerByteLeido = in.read())>= 0){
+                a = (char) primerByteLeido;
+                System.out.println("a = " + a);
+                codigo = "";
+                char control;
+                int byteLeido;
+                while((byteLeido = in.read())>=0){
+                    if ((control = (char) byteLeido) != '\n'){ 
+                        codigo +=control; 
+                    }else{
+                        break;
+                    }
+                } 
+                diccio.put(codigo,a); 
+                System.out.println(diccio.get(codigo)+"  --  "+ codigo);
+            } 
+            in.close();
+            exportarDescomprimido(pathAleer, ext,diccio);
+        /*    
+            for(i=0;i<cantidadPalabras;i++){
+                codigo = "";
+                char a = (char) in.read();
+                char control;
+                while((control = (char) in.read()) != '\n'){
+                    codigo +=control;
+                }
+                diccionario.put(a,codigo);
+                System.out.println(diccionario.get(a)+" "+ a);
+            } 
+            
+            //byte[] array = Files.readAllBytes(Paths.get("./"+pathAleer));
+             
+           while ((len = in.read()) > 0) {
+                
+                out.write(buf, 0, len);
+            }*/
+            
+           // out.close();//en teoria ya termino la copiacion  
+        }catch(IOException e){
+            
         }
-        byte[] bytes  = Files.readAllBytes(Paths.get(pathAleer));//Devuelve un arreglo de bytes del archivo, si hay bytes "negativos" los fuerza
-        
+    }
+    
+    
+    
+    public static void exportarDescomprimido(String pathAleer,String ext,HashMap<String,Character> invertido) throws IOException{ 
+        //Aca falta toda la parte de escribir strings en archivo q no me acuerdo y me dio paja 
+        byte[] bytes  = Files.readAllBytes(Paths.get("./huffman.txt"));//Devuelve un arreglo de bytes del archivo, si hay bytes "negativos" los fuerza 
         String aux = "";
         String aEscribirEnArchivo = "";
         bucle:
-        for(byte b : bytes){
+        for(byte b : bytes){ 
             for(int i=0; i<8; i++){
                 aux += getBitDeByte(b,i) ? "1" : "0";
                 if(invertido.containsKey(aux)){
+                    System.out.println("aux = " + aux);
                     char c = invertido.get(aux);
                     if(c=='\0'){
                         break bucle;
@@ -397,10 +456,46 @@ public class Nodo implements Comparable<Nodo>{
                 }
             }
         }
-        //escribirArchivo(aEscribirEnArchivo);
-        //Aca falta toda la parte de escribir strings en archivo q no me acuerdo y me dio paja
-        
+        escribirArchivo(aEscribirEnArchivo,"./descomprimido.txt"); 
     }
+    public static void escribirArchivo(String texto,String path){ 
+        System.out.println("  \n Soy texto \n" + texto);
+        File archivo = null;
+        FileReader fr = null; 
+        try {
+            archivo = new File("./"+path);        
+            BufferedWriter bw;
+            if(archivo.exists()){
+                bw = new BufferedWriter(new FileWriter(archivo));
+            }
+            else{
+                archivo.createNewFile();
+                bw = new BufferedWriter(new FileWriter(archivo));
+            }  
+            bw.write(texto); 
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally { 
+            try {
+                if (null != fr) {
+                    fr.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     public static boolean getBitDeByte(byte b, int pos){

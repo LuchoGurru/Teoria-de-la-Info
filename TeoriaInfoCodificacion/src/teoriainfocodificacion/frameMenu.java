@@ -51,6 +51,7 @@ public class frameMenu extends javax.swing.JFrame {
             public void run() {
                 Nodo.crearListaDeFrecuencia(new File("./archivo.txt"));
                 //new frameMenu().setVisible(true);  
+                Nodo.leerHuffman("tablaHuff.txt", "");
             }
         });
     }
