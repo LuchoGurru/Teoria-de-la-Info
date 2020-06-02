@@ -15,6 +15,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
@@ -367,5 +369,38 @@ public class Nodo implements Comparable<Nodo>{
         }
         return aux;
     }
+    
+    public static void leerHuffman(String pathAleer,String ext){ 
+        // diccionario = new HashMap<>(); aca tengo que llenar el diccionario con el archivo correspondiente, hacete cargo lucho
+        //Aca falta toda la parte de escribir strings en archivo q no me acuerdo y me dio paja
+        
+        HashMap<String,Character> invertido = new HashMap<>();
+        
+        for(Character clave : diccionario.keySet()){
+            invertido.put(diccionario.get(clave), clave);
+        }
+        byte[] bytes  = Files.readAllBytes(Paths.get(pathAleer));//Devuelve un arreglo de bytes del archivo, si hay bytes "negativos" los fuerza
+        
+        String aux = "";
+        String aEscribirEnArchivo = "";
+        for(byte b : bytes){
+            for(int i=0; i<8; i++){
+                aux += getBitDeByte(b,i) ? "1" : "0";
+                if(invertido.containsKey(aux)){
+                    aEscribirEnArchivo = aEscribirEnArchivo + invertido.get(aux);
+                    aux = "";
+                }
+            }
+        }
+        //escribirArchivo(aEscribirEnArchivo);
+        //Aca falta toda la parte de escribir strings en archivo q no me acuerdo y me dio paja
+        
+    }
+    
+    
+    public static boolean getBitDeByte(byte b, int pos){
+        return (1 & (b >> pos))==1; //Esta poronga retorna el booleano de la posicion del byte b (11110111) si le mandas 3 devuelve falso, xq retorna el 0 de la posicion 3 (de atras para adelante)
+    }
+    
     
 }

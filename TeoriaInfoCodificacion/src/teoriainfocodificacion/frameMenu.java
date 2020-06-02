@@ -21,7 +21,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.BitSet;
 import java.util.Random;
 import javax.swing.JOptionPane;
 
@@ -608,10 +607,10 @@ public class frameMenu extends javax.swing.JFrame {
         FileReader fr = null;
         BufferedReader br = null;
         try {
-            archivo = new File("./"+pathAleer);                                   // Apertura del fichero
+            archivo = new File("./"+pathAleer);                                 // Apertura del fichero
             fr = new FileReader(archivo);                                       // creacion de BufferedReader para poder hacer el metodo readLine()).
             br = new BufferedReader(fr);                                        // Lectura del fichero
-            String sinExtencion=pathAleer.substring(0, pathAleer.length()-4);//Saco la extencion
+            String sinExtencion=pathAleer.substring(0, pathAleer.length()-4);   //Saco la extencion
             File archivo2 = new File("./"+sinExtencion+ext);//.H
             BufferedWriter bw;
             if(archivo2.exists()){
