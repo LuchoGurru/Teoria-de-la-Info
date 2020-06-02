@@ -192,6 +192,9 @@ public class Nodo implements Comparable<Nodo>{
         if (!biteDe8.equals("")) { //Si me sobraron bits del codigo
             //Tengo que agregar un ultimo byte rellenarlo y meterle el caracter nulo de fin de archivo. 
             biteDe8 += diccionario.get('\0');//le agrego el null al final
+            while(biteDe8.length()<8){
+                biteDe8 +="0";
+            }
             if(biteDe8.length()<=8){//me quedo de 8 bits o menos asi q lo parseo
                 byte b = (byte) Integer.parseInt(biteDe8, 2);
             }
@@ -200,6 +203,9 @@ public class Nodo implements Comparable<Nodo>{
                 biteDe8 = biteDe8.substring(8); //Bite tiene lo q le sobro de agregar el null
                 byte b = (byte) Integer.parseInt(aux, 2);
                 bytesDinamico.add(b);
+                while(biteDe8.length()<8){
+                    biteDe8 +="0";
+                }
                 b = (byte) Integer.parseInt(biteDe8, 2);
                 bytesDinamico.add(b);
             }
@@ -441,14 +447,16 @@ public class Nodo implements Comparable<Nodo>{
         byte[] bytes  = Files.readAllBytes(Paths.get("./huffman.txt"));//Devuelve un arreglo de bytes del archivo, si hay bytes "negativos" los fuerza 
         String aux = "";
         String aEscribirEnArchivo = "";
+        System.out.println("El codigo de null es"+diccionario.get('\0'));
         bucle:
         for(byte b : bytes){ 
-            for(int i=0; i<8; i++){
+            for(int i=7; i>-1; i--){
                 aux += getBitDeByte(b,i) ? "1" : "0";
                 if(invertido.containsKey(aux)){
-                    System.out.println("aux = " + aux);
                     char c = invertido.get(aux);
+                    System.out.print(" aux = " + aux + " char = "+c);
                     if(c=='\0'){
+                        System.out.println("Entre al break");
                         break bucle;
                     }
                     aEscribirEnArchivo = aEscribirEnArchivo + c;
@@ -486,16 +494,6 @@ public class Nodo implements Comparable<Nodo>{
             }
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     public static boolean getBitDeByte(byte b, int pos){
