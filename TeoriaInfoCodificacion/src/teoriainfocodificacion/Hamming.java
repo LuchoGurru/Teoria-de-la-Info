@@ -1,11 +1,5 @@
 package teoriainfocodificacion;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  *
  * @author Fran
@@ -79,7 +73,6 @@ public class Hamming {
                 }
                 auxPos++;
             }
-
         }
         return codificar(bitsInfoControl, cantRedun);
     }
@@ -106,7 +99,7 @@ public class Hamming {
             }
             arregloBits[posControl - 1] = paridad % 2 != 0; // si hay nro impar de 1s pongo 1 en posControl else 0
         }
-        return arregloBits;                                                   // retorna el arreglo hamminificado
+        return arregloBits;                                 // retorna el arreglo hamminificado
     }
 
     /**
@@ -147,7 +140,6 @@ public class Hamming {
         int cantRed =getBitsRedDeHamming(arregloBits);
         boolean[] arrInfo = new boolean[cantRed];
         int j = 0;
-        //completar
         for (int i = 1; i < arregloBits.length + 1; i++) {
             if ((i & i - 1) == 0) { // Esta gilada devuelve si es potencia de 2
                 arrInfo[j] = arregloBits[i - 1];
@@ -180,7 +172,6 @@ public class Hamming {
         }
         
         int j = 0;
-        
         for (int i = 1; i < aux.length + 1; i++) {
             if ((i & i - 1) == 0) { // Esto devuelve si es potencia de 2
                 continue;
@@ -221,6 +212,4 @@ public class Hamming {
         }
         return aux;
     }
-    
-    
 }

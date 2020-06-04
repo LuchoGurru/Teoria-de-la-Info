@@ -1,15 +1,3 @@
-/*
-    Enunciado:
-    -PROTEGER ARCHIVO(.TXT) GENERANDO ARCHIVO PROTEGIDO CON BLOQUE DE 
-        32 bits “.HA1” 
-        128 bits “.HA2” 
-        1024 bits “.HA3” 
-        4096 bits “.HA4” 
-      16384 bits “.HA5” 
-    -INTRODUCIR ERRORES(.HAx) dde x=1,2,3,4,5 GENERANDO “.HEx” 
-    -DESPROTEGER ARCHIVO SIN CORREGIR(.HAx, .HEx) GENERANDO “.DEx” 
-    -DESPROTEGER ARCHIVO CORRIGIENDO(.HAx, .HEx) GENERANDO “.DHx”
- */
 package teoriainfocodificacion;
 
 import java.io.BufferedReader;
@@ -33,9 +21,6 @@ public class frameMenu extends javax.swing.JFrame {
     private String archivoIzq;
     private String archivoDer;
     private int totalBitsAleer,bloqueHamming; // inicializo en Proteger archivo
-    /**
-     * Creates new form frameMEnu
-     */
 
     public frameMenu() {
         initComponents();
@@ -402,7 +387,6 @@ public class frameMenu extends javax.swing.JFrame {
         while(hasta<strBits.length()){
             String bitsInfo = strBits.substring(0, hasta);
             lineaDeBits += Hamming.toString(Hamming.getHamming(bitsInfo));  //le meto el bloque hamminizado
-            //System.out.println(lineaDeBits.length()+" asdasda");            
 
             strBits = strBits.substring(hasta); // le como "hasta bits" a la linea
         }
@@ -685,13 +669,8 @@ public class frameMenu extends javax.swing.JFrame {
         settearLabels(archivoDer);
         jLabelTituloIzq.setText(archivoIzq.substring(2,archivoIzq.length()));
         jLabelTituloDer.setText(archivoDer.substring(2,archivoDer.length()));
-       // JScrollPane sp1 = new JScrollPane(jEditorPaneDer, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS );
-       // JScrollPane sp2 = new JScrollPane(jEditorPaneIzq, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS );
         this.jEditorPaneDer.setText(textoDer);
         this.jEditorPaneIzq.setText(textoIzq);
-        
-       // jPanelIzq.add(sp1);
-       // jPanelDer.add(sp2);
     }
     /**
      * Recibe por parametro una probabilidad la cual es un numero flotante entre 0 y 1
@@ -711,11 +690,7 @@ public class frameMenu extends javax.swing.JFrame {
         }
         return -1;
     }
-    
-    
-    
-    
-    
+   
     public boolean backUP(){
         boolean exito=false;
         try {
@@ -737,10 +712,4 @@ public class frameMenu extends javax.swing.JFrame {
         }
         return exito;
     }
-    
-    
-    
-    
-    
-    
 }
