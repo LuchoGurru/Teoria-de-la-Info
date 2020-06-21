@@ -16,13 +16,13 @@ import javax.swing.JOptionPane;
  *
  * @author Lucho
  */
-public class frameMenu extends javax.swing.JFrame {
+public class PanelHamming extends javax.swing.JFrame {
     private static String archivoElegido;
     private String archivoIzq;
     private String archivoDer;
     private int totalBitsAleer,bloqueHamming; // inicializo en Proteger archivo
 
-    public frameMenu() {
+    public PanelHamming() {
         initComponents();
         this.jEditorPaneDer.setContentType("text/html");
         this.jEditorPaneIzq.setContentType("text/html");
@@ -34,9 +34,9 @@ public class frameMenu extends javax.swing.JFrame {
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Nodo.crearListaDeFrecuencia(new File("./archivo.txt"));
-                //new frameMenu().setVisible(true);  
-                Nodo.leerHuffman("tablaHuff.txt", "");
+               // Nodo.crearListaDeFrecuencia(new File("./archivo.txt"));
+                new PanelHamming().setVisible(true);  
+              //  Nodo.leerHuffman("tablaHuff.txt", "");
             }
         });
     }
