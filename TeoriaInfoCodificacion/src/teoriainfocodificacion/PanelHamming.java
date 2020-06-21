@@ -17,6 +17,9 @@ public class PanelHamming extends javax.swing.JFrame {
     private String archivoIzq;
     private String archivoDer;
     private int totalBitsAleer,bloqueHamming; // inicializo en Proteger archivo
+    
+    private boolean [] aGuardar;
+    
 
     public PanelHamming() {
         initComponents();
@@ -379,16 +382,26 @@ public class PanelHamming extends javax.swing.JFrame {
         String lineaDeBits="";
         int hasta=totalBI-1; //EJ: 26
         int desde = 0;
+        boolean primera = true;
         while(hasta<bytesLinea.length){
             boolean bitsInfo[] = getIntervaloBits(bytesLinea, desde, hasta);
+            bitsInfo = Hamming.getHamming(bitsInfo);
+            if(primera){
+                aGuardar = bitsInfo;
+            }
+            else{
+                unirArreglos(bitsInfo); //Appendeo el arreglo hamminizado al arreglo que voy a guardar en archivo
+            }
             hasta += totalBI-1;
             desde += hasta+1;
             
-            lineaDeBits += Hamming.toString(Hamming.getHamming(bitsInfo));  //le meto el bloque hamminizado
+            lineaDeBits += Hamming.toString(bitsInfo)+"\n";  //le meto el bloque hamminizado
         }
         if(desde < bytesLinea.length){
             boolean bitsInfo[] = getIntervaloBits(bytesLinea, desde, hasta);
-            lineaDeBits += Hamming.toString(Hamming.getHamming(bitsInfo));
+            bitsInfo = Hamming.getHamming(bitsInfo);
+            unirArreglos(bitsInfo);
+            lineaDeBits += Hamming.toString(bitsInfo);
         }
         return lineaDeBits;
     }
@@ -400,7 +413,6 @@ public class PanelHamming extends javax.swing.JFrame {
         while(hasta<strBits.length()){
             String bitsInfo = strBits.substring(0, hasta);
             lineaDeBits += Hamming.toString(Hamming.getHamming(bitsInfo));  //le meto el bloque hamminizado
-
             strBits = strBits.substring(hasta); // le como "hasta bits" a la linea
         }
         if(strBits.length()>0){
@@ -760,5 +772,19 @@ public class PanelHamming extends javax.swing.JFrame {
             }
         }
         return retorno;
+    }
+    
+    /**
+     * Une el arreglo pasado por parametro al arreglo de booleanos que se va a guardar en archivo
+     * @param aUnir 
+     */
+    public void unirArreglos(boolean [] aUnir){
+        int tam = aUnir.length + aGuardar.length;
+        boolean nuevo[] = new boolean[tam];
+        for(int i=0; i<aGuardar.length; i++)
+            nuevo[i]=aGuardar[i];
+        for(int i = aGuardar.length; i<tam; i++)
+            nuevo[i] = aUnir[i-aGuardar.length];
+        aGuardar=nuevo;
     }
 }
