@@ -7,14 +7,14 @@ package teoriainfocodificacion;
 public class Hamming {
 
     /**
-     * Recibe un string de bits de informacion
+     * Recibe la cantidad de bits de informacion
      * Retorna la cantidad de redundantes necesaria para el hamming
      * @param bitsInfo
      * @return 
      */
     
-    public static int getBitsRedDeString(String bitsInfo) {
-        int cantBitsInfo = bitsInfo.length();
+    public static int getBitsRedDeInfo(int bitsInfo) {
+        int cantBitsInfo = bitsInfo;
         int cantRedundante = 1;
         while (Math.pow(2, cantRedundante) < (cantBitsInfo + cantRedundante + 1)) {
             cantRedundante++;
@@ -58,7 +58,7 @@ public class Hamming {
      */
     public static boolean[] getHamming(String bitsInfo) {
         int cantBitsInfo = bitsInfo.length();
-        int cantRedun = getBitsRedDeString(bitsInfo);
+        int cantRedun = getBitsRedDeInfo(cantBitsInfo);
         int tam = cantRedun + cantBitsInfo + 1;
 
         boolean[] bitsInfoControl = new boolean[tam];
@@ -75,6 +75,30 @@ public class Hamming {
             }
         }
         return codificar(bitsInfoControl, cantRedun);
+    }
+    /**
+     * Recibe por parametro un arreglo de booleanos que representan bits de informacion
+     * Retorna un arreglo de booleanos hamminizado del mismo
+     * @param bitsInfo
+     * @return bitsInfoControl
+     */
+    public static boolean[] getHamming(boolean [] bitsInfo){
+        int cantBitsInfo = bitsInfo.length;
+        int cantRedun = getBitsRedDeInfo(cantBitsInfo);
+        int tam = cantRedun + cantBitsInfo + 1;
+        
+        boolean[] bitsInfoControl = new boolean [tam];
+        int auxPos = 0;
+        
+        for (int i = 1; i < tam; i++) {
+            if ((i & i - 1) == 0) { // Esta gilada devuelve si es potencia de 2
+                continue;
+            } else {
+                bitsInfoControl[i - 1] = bitsInfo[auxPos];
+                auxPos++;
+            }
+        }
+        return codificar(bitsInfo, cantRedun);
     }
 
     /**
