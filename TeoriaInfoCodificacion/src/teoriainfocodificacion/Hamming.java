@@ -60,7 +60,6 @@ public class Hamming {
         int cantBitsInfo = bitsInfo.length();
         int cantRedun = getBitsRedDeInfo(cantBitsInfo);
         int tam = cantRedun + cantBitsInfo + 1;
-
         boolean[] bitsInfoControl = new boolean[tam];
         int auxPos = 0;
 
@@ -115,7 +114,7 @@ public class Hamming {
             int posControl = (int) Math.pow(2, i); // Obtengo la posicion que deberia ir el bit de control
             paridad = 0;                            //Todavia ni idea 
             for (int posAc = 1; posAc < arregloBits.length; posAc++) {
-                if (posControl != posAc && (posControl & posAc) == posControl) { // Si la posicion actual debe ser controlada por el bit de control en posControl. 
+                if (posControl != posAc && (posControl & posAc) != 0) { // Si la posicion actual debe ser controlada por el bit de control en posControl. 
                     if (arregloBits[posAc - 1]) {                                  // Cuenta los 1 que tiene que controlar el posContol
                         paridad++;
                     }
@@ -185,7 +184,6 @@ public class Hamming {
      */
     public static boolean[] getInfo(boolean[] arregloBits, boolean arreglar) {
         int cantRed = getBitsRedDeHamming(arregloBits);
-        
         boolean[] arrInfo = new boolean[arregloBits.length - cantRed - 1];
         boolean[] aux;
         
@@ -194,12 +192,13 @@ public class Hamming {
         }else{
             aux = arregloBits.clone();
         }
-        
         int j = 0;
         for (int i = 1; i < aux.length + 1; i++) {
             if ((i & i - 1) == 0) { // Esto devuelve si es potencia de 2
                 continue;
             } else {
+                if(j==arrInfo.length)
+                    break;
                 arrInfo[j] = aux[i-1];
                 j++;
             }
