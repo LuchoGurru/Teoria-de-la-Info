@@ -7,20 +7,20 @@ package teoriainfocodificacion;
 public class Hamming {
 
     /**
-     * Recibe un string de bits de informacion
+     * Recibe la cantidad de bits de informacion
      * Retorna la cantidad de redundantes necesaria para el hamming
      * @param bitsInfo
      * @return 
      */
-    
-    public static int getBitsRedDeString(String bitsInfo) {
-        int cantBitsInfo = bitsInfo.length();
+    public static int getBitsRedDeInfo(int bitsInfo) {
+        int cantBitsInfo = bitsInfo;
         int cantRedundante = 1;
         while (Math.pow(2, cantRedundante) < (cantBitsInfo + cantRedundante + 1)) {
             cantRedundante++;
         }
         return cantRedundante;
     }
+    
     /**
      * Recibe un arreglo de booleanos hamminizado
      * Retorna la cantidad de bits redundantes del mismo
@@ -49,7 +49,6 @@ public class Hamming {
         return aux;
     }
     
-    
     /**
      * Recibe por parametro un string de bits de informacion
      * Retorna un arreglo de booleanos hamminizado del mismo
@@ -58,19 +57,33 @@ public class Hamming {
      */
     public static boolean[] getHamming(String bitsInfo) {
         int cantBitsInfo = bitsInfo.length();
-        int cantRedun = getBitsRedDeString(bitsInfo);
+        int cantRedun = getBitsRedDeInfo(cantBitsInfo);
         int tam = cantRedun + cantBitsInfo + 1;
-
         boolean[] bitsInfoControl = new boolean[tam];
         int auxPos = 0;
-
         for (int i = 1; i < tam; i++) {
-            if ((i & i - 1) == 0) { // Esta gilada devuelve si es potencia de 2
-                continue;
-            } else {
-                if (bitsInfo.charAt(auxPos) == '1') {
-                    bitsInfoControl[i - 1] = true;
-                }
+            if((i & i - 1) != 0){//Esta gilada devuelve si no es potencia de 2
+                bitsInfoControl[i - 1] = (bitsInfo.charAt(auxPos) == '1');
+                auxPos++;
+            }
+        }
+        return codificar(bitsInfoControl, cantRedun);
+    }
+    /**
+     * Recibe por parametro un arreglo de booleanos que representan bits de informacion
+     * Retorna un arreglo de booleanos hamminizado del mismo
+     * @param bitsInfo
+     * @return bitsInfoControl
+     */
+    public static boolean[] getHamming(boolean [] bitsInfo){
+        int cantBitsInfo = bitsInfo.length;
+        int cantRedun = getBitsRedDeInfo(cantBitsInfo);
+        int tam = cantRedun + cantBitsInfo + 1;
+        boolean[] bitsInfoControl = new boolean [tam];
+        int auxPos = 0;
+        for (int i = 1; i < tam; i++) {
+            if ((i & i - 1) != 0) {//Esta gilada devuelve si no es potencia de 2
+                bitsInfoControl[i - 1] = bitsInfo[auxPos];
                 auxPos++;
             }
         }
@@ -86,20 +99,16 @@ public class Hamming {
      * @return arregloBits
      */
     public static boolean[] codificar(boolean[] arregloBits, int cantRedundante) {
-        int paridad;
         for (int i = 0; i < cantRedundante; i++) {
-            int posControl = (int) Math.pow(2, i); // Obtengo la posicion que deberia ir el bit de control
-            paridad = 0;                            //Todavia ni idea 
+            int posControl = (int) Math.pow(2, i);//Obtengo la posicion que deberia ir el bit de control
+            arregloBits[posControl-1] = false;//Le pongo 1 a la pos de control
             for (int posAc = 1; posAc < arregloBits.length; posAc++) {
-                if (posControl != posAc && (posControl & posAc) == posControl) { // Si la posicion actual debe ser controlada por el bit de control en posControl. 
-                    if (arregloBits[posAc - 1]) {                                  // Cuenta los 1 que tiene que controlar el posContol
-                        paridad++;
-                    }
+                if (posControl != posAc && (posControl & posAc) != 0) {//Si la posicion actual debe ser controlada por el bit de control en posControl
+                    arregloBits[posControl-1] ^= arregloBits[posAc - 1];//Pos control = Pos control xor bit actual
                 }
             }
-            arregloBits[posControl - 1] = paridad % 2 != 0; // si hay nro impar de 1s pongo 1 en posControl else 0
         }
-        return arregloBits;                                 // retorna el arreglo hamminificado
+        return arregloBits;//Retorna el arreglo hamminificado
     }
 
     /**
@@ -110,24 +119,19 @@ public class Hamming {
      */
     public static boolean[] arreglar(boolean[] arregloBits) {
         int cantRed = getBitsRedDeHamming(arregloBits);
-        
         boolean[] auxReturn = arregloBits.clone();
-        boolean[] auxHamming = codificar(auxReturn.clone(), cantRed); // obtiene el hamming que deberia tener con los bits de informacion actual.
-        boolean[] auxRed = getRedundante(arregloBits.clone()); // Obtiene los bits de control del arreglo que viene roto por parametro. 
-
-        auxHamming = getRedundante(auxHamming);  // Obtiene los bits de control del arreglo nuevamente codificado. 
-
+        boolean[] auxHamming = codificar(auxReturn.clone(), cantRed);// obtiene el hamming que deberia tener con los bits de informacion actual.
+        boolean[] auxRed = getRedundante(arregloBits.clone());// Obtiene los bits de control del arreglo que viene roto por parametro. 
+        auxHamming = getRedundante(auxHamming);// Obtiene los bits de control del arreglo nuevamente codificado. 
         String aux = "";
-        for (int i = auxRed.length; i >= 0; i--) {         // recorre el arreglo de atras para adelante para obtener el sindrome legible
-            if (auxRed[i] == auxHamming[i]) {          // si las posiciones de los bits de control de ambos arreglos son iguales => 0 sino 1
-                aux += '0';
-            } else {
-                aux += '1';
-            }
+        for (int i = auxRed.length-1; i >= 0; i--) {// recorre el arreglo de atras para adelante para obtener el sindrome legible
+            aux += (auxRed[i] == auxHamming[i]) ? '0' : '1'; //Si las posiciones de los bits de control de ambos arreglos son iguales => 0 sino 1
         }
-        int posCorregir = Integer.parseInt(aux, 2) - 1;       // Parsea el numero binario del String generado en el for anterior a decimal
-        auxReturn[posCorregir] = !auxReturn[posCorregir]; // Corrige la posicion que esta mal
-        return auxReturn; //Retorna el arreglo corregido 
+        int posCorregir = Integer.parseInt(aux, 2) - 1;// Parsea el numero binario del String generado en el for anterior a decimal
+        if(posCorregir < 0)
+            return auxReturn;
+        auxReturn[posCorregir] = !auxReturn[posCorregir];// Corrige la posicion que esta mal
+        return auxReturn;//Retorna el arreglo corregido 
     }
 
     /**
@@ -139,13 +143,11 @@ public class Hamming {
     public static boolean[] getRedundante(boolean[] arregloBits) {
         int cantRed =getBitsRedDeHamming(arregloBits);
         boolean[] arrInfo = new boolean[cantRed];
-        int j = 0;
-        for (int i = 1; i < arregloBits.length + 1; i++) {
-            if ((i & i - 1) == 0) { // Esta gilada devuelve si es potencia de 2
-                arrInfo[j] = arregloBits[i - 1];
+        int j = -1;
+        for (int i = 1; i < arregloBits.length; i++) {
+            if ((i & i - 1) == 0) {// Esta gilada devuelve si es potencia de 2
                 j++;
-            } else {
-                continue;
+                arrInfo[j] = arregloBits[i - 1];
             }
         }
         return arrInfo;
@@ -161,27 +163,23 @@ public class Hamming {
      */
     public static boolean[] getInfo(boolean[] arregloBits, boolean arreglar) {
         int cantRed = getBitsRedDeHamming(arregloBits);
-        
         boolean[] arrInfo = new boolean[arregloBits.length - cantRed - 1];
         boolean[] aux;
-        
         if(arreglar){
             aux = arreglar(arregloBits);
         }else{
             aux = arregloBits.clone();
         }
-        
-        int j = 0;
+        int j = -1;
         for (int i = 1; i < aux.length + 1; i++) {
-            if ((i & i - 1) == 0) { // Esto devuelve si es potencia de 2
-                continue;
-            } else {
-                arrInfo[j] = aux[i-1];
+            if ((i & i - 1) != 0) {//Esto devuelve si no es potencia de 2
                 j++;
+                arrInfo[j] = aux[i-1];
             }
         }
         return arrInfo;
     }
+    
     /**
      * Recibe por parametro un arreglo de booleanos
      * Retorna un string de 0 y 1 equivalente
@@ -200,13 +198,20 @@ public class Hamming {
         return aux;
     }
     
-    
+    /**
+     * Recibe un arreglo de booleanos que representan bits
+     * Devuelve un arreglo de bytes formado por los bits ingresados
+     * @param arregloBits
+     * @return 
+     */
     public byte[] toBytes(boolean[] arregloBits) {
-        byte[] aux = new byte[arregloBits.length / 8];
-        for(int i = 0; i < aux.length; i++) {
+        byte[] aux = new byte[(int)Math.ceil(arregloBits.length/8)];//Crea un arreglo de bytes donde van a ir los bits redondeando hacia arriba, completa con 0s
+        for(int i = 0; i < aux.length; i++){//Recorre el arreglo de bytes
             for(int t = 0; t < 8; t++) {
+                if((i * 8 + t)==arregloBits.length)//Si me quede sin bits
+                    break;
                 if(arregloBits[i * 8 + t]) {
-                    aux[i] |= (128 >> t);
+                    aux[i] |= (128 >> t);//Le pone el bit correspondiente al byte i en la posicion t
                 }
             }
         }

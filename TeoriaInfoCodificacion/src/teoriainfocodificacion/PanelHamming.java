@@ -3,12 +3,8 @@ package teoriainfocodificacion;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Random;
 import javax.swing.JOptionPane;
 
@@ -21,6 +17,9 @@ public class PanelHamming extends javax.swing.JFrame {
     private String archivoIzq;
     private String archivoDer;
     private int totalBitsAleer,bloqueHamming; // inicializo en Proteger archivo
+    
+    private boolean [] aGuardar;
+    
 
     public PanelHamming() {
         initComponents();
@@ -32,7 +31,7 @@ public class PanelHamming extends javax.swing.JFrame {
     }
     
     public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
+       java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                // Nodo.crearListaDeFrecuencia(new File("./archivo.txt"));
                 new PanelHamming().setVisible(true);  
@@ -379,15 +378,41 @@ public class PanelHamming extends javax.swing.JFrame {
         return strArray;
     }
     
+    public String arrBytesToHammingString2(byte[] bytesLinea, int totalBI){
+        String lineaDeBits="";
+        int hasta=totalBI-1; //EJ: 26
+        int desde = 0;
+        boolean primera = true;
+        while(hasta<bytesLinea.length){
+            boolean bitsInfo[] = getIntervaloBits(bytesLinea, desde, hasta);
+            bitsInfo = Hamming.getHamming(bitsInfo);
+            if(primera){
+                aGuardar = bitsInfo;
+            }
+            else{
+                unirArreglos(bitsInfo); //Appendeo el arreglo hamminizado al arreglo que voy a guardar en archivo
+            }
+            hasta += totalBI-1;
+            desde += hasta+1;
+            
+            lineaDeBits += Hamming.toString(bitsInfo)+"\n";  //le meto el bloque hamminizado
+        }
+        if(desde < bytesLinea.length){
+            boolean bitsInfo[] = getIntervaloBits(bytesLinea, desde, hasta);
+            bitsInfo = Hamming.getHamming(bitsInfo);
+            unirArreglos(bitsInfo);
+            lineaDeBits += Hamming.toString(bitsInfo);
+        }
+        return lineaDeBits;
+    }
+    
     public String arrBytesToHammingString(byte[] bytesLinea, int totalBI){
-        int i=0;
         String lineaDeBits=""; 
         String strBits = arrToString(bytesLinea); //String de bits
         int hasta=totalBI; //EJ: 26
         while(hasta<strBits.length()){
             String bitsInfo = strBits.substring(0, hasta);
             lineaDeBits += Hamming.toString(Hamming.getHamming(bitsInfo));  //le meto el bloque hamminizado
-
             strBits = strBits.substring(hasta); // le como "hasta bits" a la linea
         }
         if(strBits.length()>0){
@@ -691,25 +716,75 @@ public class PanelHamming extends javax.swing.JFrame {
         return -1;
     }
    
-    public boolean backUP(){
-        boolean exito=false;
-        try {
-            File disViejo = new File("./Distribuidora.jar");// Instancio el Dist a backupear (1)
-            File disViejoCopy = new File("./Distribuidora_OLD.jar"); // Copio en el mismo lugar con otro nombre
-            //empieza copiacion
-            InputStream in = new FileInputStream(disViejo);
-            OutputStream out = new FileOutputStream(disViejoCopy);
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
+    /**
+     * Recibe un byte y una posicion y devulve el valor booleano del bit de esa posicion
+     * @param b
+     * @param pos
+     * @return 
+     */
+    public static boolean getBitDeByte(byte b, int pos){
+        return (1 & (b >> pos))==1;
+    }
+    
+    /**
+     * Recibe un arreglo de bytes por parametro, una posicion de un bit inicial y una posicion de un bit final
+     * Retorna un arreglo de booleanos que contiene los bits desde la posicion inicial hasta la final
+     * @param arr
+     * @param inicio
+     * @param fin
+     * @return 
+     */
+    public boolean [] getIntervaloBits(byte [] arr,int inicio, int fin){
+        int byteI = (int) Math.ceil(inicio/8) - 1; //Byte dnd esta el primer bit
+        int byteF = (int) Math.ceil(fin/8) - 1; //Byte dnd esta el ultimo bit
+        int bitI = inicio - (byteI)*8; //Primer bit del primer byte
+        int bitF = fin - (byteF)*8; //Ultimo bit del ultimo byte
+        int t,aux=0;
+        boolean retorno[] = new boolean[fin-inicio+1];
+        boolean completar=false;
+        
+        if(byteF >= arr.length){ //Si el intervalo se sale del tamaño del arreglo tengo que completar con 0s
+            completar = true;
+            byteF = arr.length-1;
+        }      
+        
+        bucle:
+        for(int i=byteI; i<= byteF; i++){
+            if(i==byteI){ //Si es la primera iteracion debo empezar desde bitI
+                t = bitI;
             }
-            in.close();
-            out.close();//en teoria ya termino la copiacion 
-            exito=true;
-        }catch(Exception ex){
-            ex.printStackTrace();
+            else{
+                t=0;
+            }
+            while(t<8){
+                retorno[aux]=getBitDeByte(arr[i],t); //Esto puede que sea al revez no me acuerdo
+                if(byteI==byteF && t==bitF && !completar){ //Si estoy en el ultimo byte y en el ultimo bit y ademas no hay que completar nada rompo el bucle
+                    break bucle;
+                }
+                aux++;//indice del arreglo de booleanos
+                t++; //indice del byte actual
+            }
         }
-        return exito;
+        if(completar){
+            while(aux<retorno.length){
+                retorno[aux]=false; //completo con 0s
+                aux++;
+            }
+        }
+        return retorno;
+    }
+    
+    /**
+     * Une el arreglo pasado por parametro al arreglo de booleanos que se va a guardar en archivo
+     * @param aUnir 
+     */
+    public void unirArreglos(boolean [] aUnir){
+        int tam = aUnir.length + aGuardar.length;
+        boolean nuevo[] = new boolean[tam];
+        for(int i=0; i<aGuardar.length; i++)
+            nuevo[i]=aGuardar[i];
+        for(int i = aGuardar.length; i<tam; i++)
+            nuevo[i] = aUnir[i-aGuardar.length];
+        aGuardar=nuevo;
     }
 }
