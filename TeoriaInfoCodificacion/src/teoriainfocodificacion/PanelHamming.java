@@ -29,7 +29,7 @@ public class PanelHamming extends javax.swing.JFrame {
         archivoDer="";
         archivoIzq="";
     }
-    
+    /*
     public static void main(String[] args) {
        java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -39,7 +39,7 @@ public class PanelHamming extends javax.swing.JFrame {
             }
         });
     }
-    
+    */
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

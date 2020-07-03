@@ -94,57 +94,10 @@ public class Nodo implements Comparable<Nodo>{
         return "Nodo{" + "cant=" + cant + ", c=" + c + ", codigo=" + codigo + '}';
     }
     
-    public static void crearListaDeFrecuencia(File archivo){
-        HashMap<Character,Float> frecuencias = new HashMap<>();
-        frecuencias.put('\0',(float)1); //Le ponemos el caracter que indica fin de archivo
-        FileReader fr = null;
-        BufferedReader br = null;
-        Float contChars;
-        try {
-            archivo = new File("./archivo.txt");                                   // Apertura del fichero
-            fr = new FileReader(archivo);                                       // creacion de BufferedReader para poder hacer el metodo readLine()).
-            br = new BufferedReader(fr);                                        // Lectura del fichero
-            String linea;
-            String textoOriginal="";
-            boolean primero = true;
-            while ((linea = br.readLine()) != null) { 
-                if(primero){
-                    primero = false;
-                    textoOriginal += linea;
-                }else{
-                    linea ='\n'+linea;
-                    textoOriginal += linea;
-                }
-                for(int i=0;i<linea.length();i++){
-                    if((contChars = frecuencias.get(linea.charAt(i)))!=null)
-                        frecuencias.put(linea.charAt(i),contChars+1);
-                    else 
-                        frecuencias.put(linea.charAt(i),(float)1);
-                }
-            } 
-            int totalCaracteres = frecuencias.size();
-            Set<Character> claves = (Set<Character>) frecuencias.keySet();
-            ArrayList<Nodo> frecsNodos = new ArrayList<>();
-            for(Character c: claves){
-                frecuencias.replace(c, frecuencias.get(c)/totalCaracteres); // Transformo cantidades en frecuencias.
-                frecsNodos.add(new Nodo(c,frecuencias.get(c)));//Voy creando los nodos para dejarlos ordenados en la linea de abajo 
-            }
-            Collections.sort(frecsNodos);//Ordeno de menor a mayor
-            Nodo raiz = getArbol(frecsNodos);
-            raiz.setCodigo("");
-            raiz.codificar(raiz); 
-            escribirHuffman(textoOriginal,raiz.imprimirArbol(raiz,""));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally { // En el finally cerramos el fichero, para asegurarnos que se cierra tanto si todo va bien como si salta excepcion
-            try {
-                if (null != fr){ fr.close();}
-            } catch (Exception e2) {e2.printStackTrace();}
-        }
-    } 
+   
     
     /**
-     * Recibe un string con el texto a codificar
+     * Recibe un string con el texto del archivo Original a codificar
      * Devuelve un arreglo de bytes codificado en huffman
      * @param texto
      * @return 
@@ -162,12 +115,29 @@ public class Nodo implements Comparable<Nodo>{
             } else { //Lleno el byte pero me sobran bits del codigo
                 biteDe8 += diccionario.get(texto.charAt(i)).substring(0, libre); // corto el codigo para tener 8 bits justo
                 byte b = (byte) Integer.parseInt(biteDe8, 2);
+               // System.out.println("biteDe8 >libre " + biteDe8);
                 bytesDinamico.add(b);//Agrego al arreglo de bytes a imprimir
-                biteDe8 = diccionario.get(texto.charAt(i)).substring(libre); //Le pongo lo que me sobro al siguiente byte 
-                libre = 8 - (bitsCodigo - libre);    //Steteo el numero de bits libres del byte a crear
+                biteDe8 = diccionario.get(texto.charAt(i)).substring(libre); 
+              //  System.out.println("biteDe8 >libre " + biteDe8);
+                bitsCodigo = biteDe8.length(); //Lo que me sobra del codigo
+                  //               System.out.println("libre antes while= " + libre);
+                libre = 8;
+                while(libre<bitsCodigo){ //diccionario.get(texto.charAt(i)).length() si lo que me sobra del codigo es mayor a un byte
+                    String auxBiteDe8 = biteDe8.substring(0, libre);
+                    b = (byte) Integer.parseInt(auxBiteDe8, 2);
+                  //  System.out.println("auxBiteDe8 dentro while = " + auxBiteDe8);
+                    bytesDinamico.add(b);//Agrego al arreglo de bytes a imprimir
+                    biteDe8 = biteDe8.substring(libre); //Le pongo lo que me sobro al siguiente byte
+                    bitsCodigo = biteDe8.length();
+                }
+                 //Le pongo lo que me sobro al siguiente byte 
+               //  System.out.println("libre = despues while" + libre);
+                libre = libre - bitsCodigo;    //Steteo el numero de bits libres del byte a crear
+
             }
             if (libre == 0) { //Si biteDe8.length() == 8 entonces agrego un byte al arreglo y libre = 8 
                 byte b = (byte) Integer.parseInt(biteDe8, 2);
+                //System.out.println("biteDe8 ==0 " + biteDe8);
                 bytesDinamico.add(b);//Agregarlo al arreglo de bytes a imprimir
                 libre = 8;
                 biteDe8 = "";
@@ -196,18 +166,22 @@ public class Nodo implements Comparable<Nodo>{
         }
         return getArregloDeBytes(bytesDinamico);
     }
-         
-    public static void escribirHuffman(String texto, String tabla) throws IOException {
-        File tablaHuffman = new File("./tablaHuff.txt");
+    
+    public static Object[] escribirHuffman(String nombreArchivo,String texto, String tabla) throws IOException {
+        File tablaHuffman = new File(nombreArchivo+".TUF");
         OutputStream out = new FileOutputStream(tablaHuffman);
+        Object[] datos = new Object[2];
         byte[] buf = tabla.getBytes();
         out.write(buf,0,buf.length); 
         out.close();//A la tabla de la escribo como está. 
-        File archivo = new File("./huffman.txt");//.H
+        datos[0] = buf;
+        File archivo = new File(nombreArchivo+".HUF");//.H
         out = new FileOutputStream(archivo);
         buf = codificarHuffman(texto);
         out.write(buf);
-        out.close(); 
+        out.close();
+        datos[1] = buf;
+        return datos;
     }
     
     public static byte[] getArregloDeBytes(ArrayList<Byte> arrBytes){
@@ -287,7 +261,7 @@ public class Nodo implements Comparable<Nodo>{
         String strBits = arrToString(tabla.getBytes());//String de bits
     }
     
-    public String arrToString(byte[] b){
+    public static String arrToString(byte[] b){
         int i=0;
         String strArray="";
         for(i=0; i< b.length;i++){
@@ -301,7 +275,7 @@ public class Nodo implements Comparable<Nodo>{
      * Si el padre es distinto de null toma el codigo del padre y agrega un 0 o un 1 si el hijo es el izquierdo o el derecho respectivamente.
      * @param raiz 
      */
-    private void codificar (Nodo raiz){
+    public void codificar (Nodo raiz){
         if (raiz != null){
             Nodo aux;
             if((aux = raiz.getPadre())!=null){
@@ -330,42 +304,7 @@ public class Nodo implements Comparable<Nodo>{
         return aux;
     }
     
-    /**
-     * Recibe la ruta de un archivo de tabla
-     * Recibe la extension del archivo
-     * Lee un arhivo donde se encuentra la tabla de codificacion de huffman
-     * Instancia un mapa de la forma caracter,codificacion
-     * @param pathAleer
-     * @param ext 
-     */
-    public static void leerHuffman(String pathAleer,String ext){
-        try{
-            HashMap<String,Character> diccio = new HashMap<>();//Instancio el diccionario
-            File tablaHuffman = new File("./"+pathAleer);// Instancio el Archivo que voy a leer
-            InputStream in = new FileInputStream(tablaHuffman);
-            String codigo="";
-            char a; 
-            int primerByteLeido;
-            while((primerByteLeido = in.read())>= 0){
-                a = (char) primerByteLeido;
-                codigo = "";
-                char control;
-                int byteLeido;
-                while((byteLeido = in.read())>=0){
-                    if ((control = (char) byteLeido) != '\n'){ 
-                        codigo +=control; 
-                    }else{
-                        break;
-                    }
-                } 
-                diccio.put(codigo,a);
-            } 
-            in.close();
-            exportarDescomprimido(pathAleer, ext,diccio);
-        }catch(IOException e){
-            
-        }
-    }
+
     
     /**
      * Recibe la ruta de un archivo comprimido en codificacion huffman
@@ -377,15 +316,19 @@ public class Nodo implements Comparable<Nodo>{
      * @param invertido
      * @throws IOException 
      */
-    public static void exportarDescomprimido(String pathAleer,String ext,HashMap<String,Character> invertido) throws IOException{ 
-        byte[] bytes  = Files.readAllBytes(Paths.get("./huffman.txt"));//Devuelve un arreglo de bytes del archivo, si hay bytes "negativos" los fuerza 
+    public static void exportarDescomprimido(String pathAleer,String ext,HashMap<String,Character> invertido) throws IOException{  
+        byte[] bytes  = Files.readAllBytes(Paths.get(pathAleer));//Devuelve un arreglo de bytes del archivo, si hay bytes "negativos" los fuerza 
+        System.out.println("bytes.length = " + bytes.length);
+        System.out.println(arrToString(bytes));
         String aux = "";
         String aEscribirEnArchivo = "";
         bucle:
         for(byte b : bytes){ 
             for(int i=7; i>-1; i--){
+                System.out.println("aux = " + aux);
                 aux += getBitDeByte(b,i) ? "1" : "0";
                 if(invertido.containsKey(aux)){
+                    System.out.println("invertido.get(aux) = " + invertido.get(aux));
                     char c = invertido.get(aux);
                     if(c=='\0'){
                         break bucle;
@@ -395,7 +338,8 @@ public class Nodo implements Comparable<Nodo>{
                 }
             }
         }
-        escribirArchivo(aEscribirEnArchivo,"./descomprimido.txt"); 
+        String sinExtencion=pathAleer.substring(0,pathAleer.length()-4);
+        escribirArchivo(aEscribirEnArchivo,sinExtencion+".txt"); 
     }
     
     /**
@@ -410,7 +354,7 @@ public class Nodo implements Comparable<Nodo>{
         File archivo = null;
         FileReader fr = null; 
         try {
-            archivo = new File("./"+path);        
+            archivo = new File(path+"1");        
             BufferedWriter bw;
             if(archivo.exists()){
                 bw = new BufferedWriter(new FileWriter(archivo));
