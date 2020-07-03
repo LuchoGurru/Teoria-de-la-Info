@@ -123,20 +123,20 @@ public class FrameMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        jDialog1 = new javax.swing.JDialog();
-                    jDialog1.setSize(1125, 710);
-                    jDialog1.setResizable(false);
-                 //   jDialog1.setUndecorated(true);
-                    jDialog1.setTitle("Cargar Contrato"); 
-                    jDialog1.setBounds(90,10 , 1125, 710);
-                    jDialog1.setModal(true);  
-                    jDialog1.add(new PanelHuffman());
-                    jDialog1.setVisible(true);
-                    return;
+         new PanelHamming().setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        new PanelHamming().setVisible(true);
+        jDialog1 = new javax.swing.JDialog();
+           jDialog1.setSize(1125, 710);
+           jDialog1.setResizable(false);
+        //   jDialog1.setUndecorated(true);
+           jDialog1.setTitle("Cargar Contrato"); 
+           jDialog1.setBounds(90,10 , 1125, 710);
+           jDialog1.setModal(true);  
+           jDialog1.add(new PanelHuffman());
+           jDialog1.setVisible(true);
+           return;
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

@@ -307,10 +307,12 @@ public class PanelHuffman extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         leerHuffman(jLabelArchivoElegido.getText(), "");
+        llenarListaArchivos();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         crearListaDefrecuencias(jLabelArchivoElegido.getText());
+        llenarListaArchivos();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jComboListaArchivosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboListaArchivosActionPerformed
