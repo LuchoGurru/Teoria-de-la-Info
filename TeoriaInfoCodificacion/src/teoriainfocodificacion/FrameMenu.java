@@ -28,6 +28,7 @@ public class FrameMenu extends javax.swing.JFrame {
     private void initComponents() {
 
         jDialog1 = new javax.swing.JDialog();
+        jDialog2 = new javax.swing.JDialog();
         jPanel1 = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -42,6 +43,17 @@ public class FrameMenu extends javax.swing.JFrame {
         );
         jDialog1Layout.setVerticalGroup(
             jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout jDialog2Layout = new javax.swing.GroupLayout(jDialog2.getContentPane());
+        jDialog2.getContentPane().setLayout(jDialog2Layout);
+        jDialog2Layout.setHorizontalGroup(
+            jDialog2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        jDialog2Layout.setVerticalGroup(
+            jDialog2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 300, Short.MAX_VALUE)
         );
 
@@ -123,20 +135,29 @@ public class FrameMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-         new PanelHamming().setVisible(true);
+        jDialog2 = new javax.swing.JDialog();
+        jDialog2.setSize(1125, 710);
+        jDialog2.setResizable(false);
+     //   jDialog1.setUndecorated(true);
+        jDialog2.setTitle("Proteger Archivo"); 
+        jDialog2.setBounds(90,10 , 1350, 740);
+        jDialog2.setModal(true);  
+        jDialog2.add(new PanelHamming());
+        jDialog2.setVisible(true);
+        return; 
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         jDialog1 = new javax.swing.JDialog();
-           jDialog1.setSize(1125, 710);
-           jDialog1.setResizable(false);
-        //   jDialog1.setUndecorated(true);
-           jDialog1.setTitle("Cargar Contrato"); 
-           jDialog1.setBounds(90,10 , 1125, 710);
-           jDialog1.setModal(true);  
-           jDialog1.add(new PanelHuffman());
-           jDialog1.setVisible(true);
-           return;
+        jDialog1.setSize(1125, 710);
+        jDialog1.setResizable(false);
+     //   jDialog1.setUndecorated(true);
+        jDialog1.setTitle("Compactacion de Archivos"); 
+        jDialog1.setBounds(90,10 , 1125, 710);
+        jDialog1.setModal(true);  
+        jDialog1.add(new PanelHuffman());
+        jDialog1.setVisible(true);
+        return;
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
@@ -178,6 +199,7 @@ public class FrameMenu extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JDialog jDialog1;
+    private javax.swing.JDialog jDialog2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

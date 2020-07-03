@@ -316,19 +316,15 @@ public class Nodo implements Comparable<Nodo>{
      * @param invertido
      * @throws IOException 
      */
-    public static void exportarDescomprimido(String pathAleer,String ext,HashMap<String,Character> invertido) throws IOException{  
+    public static Object[] exportarDescomprimido(String pathAleer,String ext,HashMap<String,Character> invertido) throws IOException{  
         byte[] bytes  = Files.readAllBytes(Paths.get(pathAleer));//Devuelve un arreglo de bytes del archivo, si hay bytes "negativos" los fuerza 
-        System.out.println("bytes.length = " + bytes.length);
-        System.out.println(arrToString(bytes));
         String aux = "";
         String aEscribirEnArchivo = "";
         bucle:
         for(byte b : bytes){ 
             for(int i=7; i>-1; i--){
-                System.out.println("aux = " + aux);
                 aux += getBitDeByte(b,i) ? "1" : "0";
                 if(invertido.containsKey(aux)){
-                    System.out.println("invertido.get(aux) = " + invertido.get(aux));
                     char c = invertido.get(aux);
                     if(c=='\0'){
                         break bucle;
@@ -338,45 +334,14 @@ public class Nodo implements Comparable<Nodo>{
                 }
             }
         }
-        String sinExtencion=pathAleer.substring(0,pathAleer.length()-4);
-        escribirArchivo(aEscribirEnArchivo,sinExtencion+".txt"); 
+        //String sinExtencion=pathAleer.substring(0,pathAleer.length()-4);
+        Object[] retorno = new Object[2];
+        retorno[0]=aEscribirEnArchivo;
+        retorno[1]=bytes;
+       return retorno; 
     }
     
-    /**
-     * Recibe un texto con la informacion que se va guardar en el archivo
-     * Recibe una ruta donde se va a crear/guardar el archivo
-     * Crea el archivo en caso de que no exista con la informacion de texto
-     * @param texto
-     * @param path 
-     */
-    public static void escribirArchivo(String texto,String path){
-        System.out.println(texto);
-        File archivo = null;
-        FileReader fr = null; 
-        try {
-            archivo = new File(path+"1");        
-            BufferedWriter bw;
-            if(archivo.exists()){
-                bw = new BufferedWriter(new FileWriter(archivo));
-            }
-            else{
-                archivo.createNewFile();
-                bw = new BufferedWriter(new FileWriter(archivo));
-            }  
-            bw.write(texto); 
-            bw.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally { 
-            try {
-                if (null != fr) {
-                    fr.close();
-                }
-            } catch (Exception e2) {
-                e2.printStackTrace();
-            }
-        }
-    }
+   
     
     /**
      * Recibe un byte y una posicion y devulve el valor booleano del bit de esa posicion

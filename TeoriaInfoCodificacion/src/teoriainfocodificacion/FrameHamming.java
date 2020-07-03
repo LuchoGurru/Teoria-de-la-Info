@@ -1,4 +1,3 @@
-
 package teoriainfocodificacion;
 
 import java.io.BufferedWriter;
@@ -10,38 +9,37 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Random;
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author Lucho
  */
-public class PanelHamming extends javax.swing.JPanel {
-
+public class FrameHamming extends javax.swing.JFrame {
     private static String archivoElegido;
     private String archivoIzq;
     private String archivoDer;
     private boolean[] aGuardarHamming;
     private int totalBitsAleer,bloqueHamming; // inicializo en Proteger archivo
 
-    public PanelHamming() {
+    public FrameHamming() {
         initComponents();
         this.jEditorPaneDer.setContentType("text/html");
         this.jEditorPaneIzq.setContentType("text/html");
+        elegirArchivo("archivo.txt");//faltaria un metodo porque se tiene que activar de un boton en teoria, sino lo dejamos asi
         archivoDer="";
         archivoIzq="";
-        llenarListaArchivos();
     }
-     public void llenarListaArchivos(){
-        jComboListaArchivos.removeAllItems(); 
-        File directorio = new File("./"); 
-        File[] archivos=null;
-        if(directorio.exists()){
-            archivos = directorio.listFiles();
-        }
-        int i; 
-        for(i=0;i<archivos.length;i++){ 
-            jComboListaArchivos.addItem(""+archivos[i]);   
-        }
+    /*
+    public static void main(String[] args) {
+       java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+               // Nodo.crearListaDeFrecuencia(new File("./archivo.txt"));
+                new FrameHamming().setVisible(true);  
+              //  Nodo.leerHuffman("tablaHuff.txt", "");
+            }
+        });
     }
+    */
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -51,14 +49,6 @@ public class PanelHamming extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanelIzq = new javax.swing.JPanel();
-        jLabelTituloIzq = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jEditorPaneIzq = new javax.swing.JEditorPane();
-        jPanelDer = new javax.swing.JPanel();
-        jLabelTituloDer = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jEditorPaneDer = new javax.swing.JEditorPane();
         jPanel1 = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -71,41 +61,16 @@ public class PanelHamming extends javax.swing.JPanel {
         jLabelArchHE = new javax.swing.JLabel();
         jComboArchivosADecodificar = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jComboListaArchivos = new javax.swing.JComboBox<>();
-        jLabel4 = new javax.swing.JLabel();
-        jLabelArchivoElegido = new javax.swing.JLabel();
+        jPanelIzq = new javax.swing.JPanel();
+        jLabelTituloIzq = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jEditorPaneIzq = new javax.swing.JEditorPane();
+        jPanelDer = new javax.swing.JPanel();
+        jLabelTituloDer = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jEditorPaneDer = new javax.swing.JEditorPane();
 
-        jPanelIzq.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
-        jPanelIzq.setMinimumSize(new java.awt.Dimension(372, 531));
-        jPanelIzq.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabelTituloIzq.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabelTituloIzq.setText("Nombre Archivo Elegido.txt");
-        jPanelIzq.add(jLabelTituloIzq, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 15, -1, 23));
-
-        jEditorPaneIzq.setEditable(false);
-        jEditorPaneIzq.setMaximumSize(new java.awt.Dimension(368, 476));
-        jEditorPaneIzq.setMinimumSize(new java.awt.Dimension(368, 476));
-        jEditorPaneIzq.setPreferredSize(new java.awt.Dimension(368, 476));
-        jScrollPane3.setViewportView(jEditorPaneIzq);
-
-        jPanelIzq.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 44, 430, 476));
-
-        jPanelDer.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
-        jPanelDer.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabelTituloDer.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabelTituloDer.setText("Nombre Archivo Elegido.txt");
-        jPanelDer.add(jLabelTituloDer, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 13, -1, 23));
-
-        jEditorPaneDer.setEditable(false);
-        jEditorPaneDer.setMaximumSize(new java.awt.Dimension(368, 476));
-        jEditorPaneDer.setMinimumSize(new java.awt.Dimension(368, 476));
-        jEditorPaneDer.setPreferredSize(new java.awt.Dimension(368, 476));
-        jScrollPane1.setViewportView(jEditorPaneDer);
-
-        jPanelDer.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 42, 440, 475));
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2), "Codificacion Hamming de Archivos txt.", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI Historic", 1, 14))); // NOI18N
 
@@ -146,19 +111,6 @@ public class PanelHamming extends javax.swing.JPanel {
 
         jLabel3.setText(" Elegir el Archivo a desprotejer:");
 
-        jLabel2.setText("Elegir archivo a proteger");
-
-        jComboListaArchivos.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboListaArchivosActionPerformed(evt);
-            }
-        });
-
-        jLabel4.setText("El archivo elegido es :");
-
-        jLabelArchivoElegido.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabelArchivoElegido.setText("Ejemplo.ext");
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -179,29 +131,13 @@ public class PanelHamming extends javax.swing.JPanel {
                             .addComponent(jLabel5)
                             .addComponent(jLabel7))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jLabelArchHE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabelArchivoElegido, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jComboListaArchivos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jLabelArchHE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jComboListaArchivos, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelArchivoElegido, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jComboHamming, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -217,47 +153,69 @@ public class PanelHamming extends javax.swing.JPanel {
                 .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabelArchHE, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jComboArchivosADecodificar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(83, 83, 83))
+                .addGap(26, 26, 26))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
+        jPanelIzq.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
+        jPanelIzq.setMinimumSize(new java.awt.Dimension(372, 531));
+        jPanelIzq.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabelTituloIzq.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabelTituloIzq.setText("Nombre Archivo Elegido.txt");
+        jPanelIzq.add(jLabelTituloIzq, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 15, -1, 23));
+
+        jEditorPaneIzq.setEditable(false);
+        jEditorPaneIzq.setMaximumSize(new java.awt.Dimension(368, 476));
+        jEditorPaneIzq.setMinimumSize(new java.awt.Dimension(368, 476));
+        jEditorPaneIzq.setPreferredSize(new java.awt.Dimension(368, 476));
+        jScrollPane3.setViewportView(jEditorPaneIzq);
+
+        jPanelIzq.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 44, 348, 476));
+
+        jPanelDer.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
+        jPanelDer.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabelTituloDer.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabelTituloDer.setText("Nombre Archivo Elegido.txt");
+        jPanelDer.add(jLabelTituloDer, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 13, -1, 23));
+
+        jEditorPaneDer.setEditable(false);
+        jEditorPaneDer.setMaximumSize(new java.awt.Dimension(368, 476));
+        jEditorPaneDer.setMinimumSize(new java.awt.Dimension(368, 476));
+        jEditorPaneDer.setPreferredSize(new java.awt.Dimension(368, 476));
+        jScrollPane1.setViewportView(jEditorPaneDer);
+
+        jPanelDer.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 42, 366, 475));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jPanelIzq, javax.swing.GroupLayout.PREFERRED_SIZE, 473, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(511, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(864, Short.MAX_VALUE)
-                    .addComponent(jPanelDer, javax.swing.GroupLayout.PREFERRED_SIZE, 490, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap()))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanelIzq, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanelDer, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanelIzq, javax.swing.GroupLayout.PREFERRED_SIZE, 533, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanelDer, javax.swing.GroupLayout.PREFERRED_SIZE, 533, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(154, Short.MAX_VALUE)))
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanelDer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanelIzq, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 530, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
+
+        pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -314,12 +272,12 @@ public class PanelHamming extends javax.swing.JPanel {
                 ext =".DH"+ext;
                 decodificarArchivo(nombreArchivo, ext,true);
                 //Corregido “.DHx”
-            }else{
+            }else{  
                 //Aca tengo que armar la extencion DEx
                 ext =".DE"+ext;
                 decodificarArchivo(nombreArchivo, ext,false);
                 //No corregido “.DEx”
-            }
+            } 
         }else{
             ext = nombreArchivo.substring(nombreArchivo.length()-1);
             //inicializado en el boton  "protegerArchivo()"
@@ -329,11 +287,6 @@ public class PanelHamming extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
-    private void jComboListaArchivosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboListaArchivosActionPerformed
-        jLabelArchivoElegido.setText((""+jComboListaArchivos.getSelectedItem()).substring(2)); //para sacarle el "./"
-        elegirArchivo(""+jComboListaArchivos.getSelectedItem());
-    }//GEN-LAST:event_jComboListaArchivosActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -341,18 +294,14 @@ public class PanelHamming extends javax.swing.JPanel {
     private javax.swing.JButton jButton5;
     private javax.swing.JComboBox<String> jComboArchivosADecodificar;
     private javax.swing.JComboBox<String> jComboHamming;
-    private javax.swing.JComboBox<String> jComboListaArchivos;
     private javax.swing.JEditorPane jEditorPaneDer;
     private javax.swing.JEditorPane jEditorPaneIzq;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabelArchHA;
     private javax.swing.JLabel jLabelArchHE;
-    private javax.swing.JLabel jLabelArchivoElegido;
     private javax.swing.JLabel jLabelTituloDer;
     private javax.swing.JLabel jLabelTituloIzq;
     private javax.swing.JPanel jPanel1;
@@ -499,7 +448,7 @@ public class PanelHamming extends javax.swing.JPanel {
     public void readFileToBynari(int cantBits,String extArchivo){
         String aImprimir;
         try {
-            String contenido ="linea 448";// Files.readString(Paths.get(archivoElegido));
+            String contenido ="";// Files.readString(Paths.get(archivoElegido));
             String sinExtencion = archivoElegido.substring(0, archivoElegido.length()-4);//Saco la extencion
             File archivo2 = new File("./"+sinExtencion+extArchivo);//.HAx
             
@@ -618,4 +567,5 @@ public class PanelHamming extends javax.swing.JPanel {
         this.jEditorPaneDer.setText(textoDer);
         this.jEditorPaneIzq.setText(textoIzq);
     }
+    
 }

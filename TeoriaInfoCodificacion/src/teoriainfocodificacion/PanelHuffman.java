@@ -6,12 +6,16 @@
 package teoriainfocodificacion;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,14 +40,24 @@ public class PanelHuffman extends javax.swing.JPanel {
         llenarListaArchivos();
     }
     public void llenarListaArchivos(){
-        File directorio = new File("./");
+        jComboListaArchivos.removeAllItems();
+        String[] archivosPermitidos = {".txt",".doc",".HUF",".wp",".DH",".DE"};
+        File directorio = new File("./"); 
         File[] archivos=null;
         if(directorio.exists()){
             archivos = directorio.listFiles();
         }
         int i;
+        boolean permitido=false;
         for(i=0;i<archivos.length;i++){
-            jComboListaArchivos.addItem(""+archivos[i]);
+            int j;
+            for(j=0;j<archivosPermitidos.length;j++){ 
+                if((""+archivos[i]).contains(archivosPermitidos[j])){ 
+                    permitido=true;
+                    jComboListaArchivos.addItem(""+archivos[i]); 
+                    break;
+                }
+            } 
         }
     }
 
@@ -54,8 +68,8 @@ public class PanelHuffman extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jButtonDescomprimir = new javax.swing.JButton();
+        jButtonComprimir = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabelArchivoElegido = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -95,17 +109,17 @@ public class PanelHuffman extends javax.swing.JPanel {
 
         jLabel2.setText("Elegir archivo a comprimir");
 
-        jButton1.setText("Descomprimir Archivo");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonDescomprimir.setText("Descomprimir Archivo");
+        jButtonDescomprimir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButtonDescomprimirActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Comprimir Archivo");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        jButtonComprimir.setText("Comprimir Archivo");
+        jButtonComprimir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                jButtonComprimirActionPerformed(evt);
             }
         });
 
@@ -187,8 +201,8 @@ public class PanelHuffman extends javax.swing.JPanel {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(10, 10, 10)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(jButtonComprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jButtonDescomprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jLabel6))
                         .addGap(0, 72, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
@@ -217,9 +231,9 @@ public class PanelHuffman extends javax.swing.JPanel {
                 .addGap(23, 23, 23)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jButtonComprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(24, 24, 24)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jButtonDescomprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -305,25 +319,31 @@ public class PanelHuffman extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButtonDescomprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDescomprimirActionPerformed
         leerHuffman(jLabelArchivoElegido.getText(), "");
         llenarListaArchivos();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jButtonDescomprimirActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jButtonComprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonComprimirActionPerformed
         crearListaDefrecuencias(jLabelArchivoElegido.getText());
         llenarListaArchivos();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_jButtonComprimirActionPerformed
 
     private void jComboListaArchivosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboListaArchivosActionPerformed
         jLabelArchivoElegido.setText(""+jComboListaArchivos.getSelectedItem());
-//        elegirArchivo(jComboListaArchivos.getSelectedIndex()+"");
+        if(jLabelArchivoElegido.getText().contains(".DE") || jLabelArchivoElegido.getText().contains(".DH")||jLabelArchivoElegido.getText().contains(".HUF") ){
+            jButtonDescomprimir.setEnabled(!jLabelArchivoElegido.getText().contains(".DHU"));//Esto tiene sentido  
+            jButtonComprimir.setEnabled(!jLabelArchivoElegido.getText().contains(".HUF"));
+        }else{
+            jButtonComprimir.setEnabled(true);  
+            jButtonDescomprimir.setEnabled(false);            
+        } 
     }//GEN-LAST:event_jComboListaArchivosActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButtonComprimir;
+    private javax.swing.JButton jButtonDescomprimir;
     private javax.swing.JComboBox<String> jComboListaArchivos;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JEditorPane jEditorPaneDer;
@@ -351,8 +371,6 @@ public class PanelHuffman extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JComboBox<String> jcbTipoInmueble;
-    private javax.swing.JComboBox<String> jcbTipoInmueble1;
     // End of variables declaration//GEN-END:variables
 
     public void crearListaDefrecuencias(String archivoSeleccionado){
@@ -411,22 +429,22 @@ public class PanelHuffman extends javax.swing.JPanel {
         jEditorPaneIzq.setText(izquierdo);
         try {jEditorPaneDer.setText(new String(derecho, "UTF-8"));
         } catch (UnsupportedEncodingException ex) { Logger.getLogger(PanelHuffman.class.getName()).log(Level.SEVERE, null, ex);}
-        jLabelTamBytesOriginal.setText(""+izquierdo.getBytes().length);
-        jLabelTamBytesCompr.setText(""+derecho.length);
-        jLabelTamBytesRed.setText(""+(izquierdo.getBytes().length-derecho.length));
+        jLabelTamBytesOriginal.setText(izquierdo.getBytes().length + " bytes");
+        jLabelTamBytesCompr.setText(derecho.length + " bytes");
+        jLabelTamBytesRed.setText((izquierdo.getBytes().length-derecho.length) + " bytes");
         jLabelArchCreado.setText(sinExtencion+".HUF");
         jLabelTablaCreada.setText(sinExtencion+".TUF");
-        jLabelTamBytesTabla.setText(""+tabla.length);
+        jLabelTamBytesTabla.setText(tabla.length + " bytes");
     }    
     /**
-     * Recibe la ruta de un archivo de tabla
+     * Recibe la ruta de un archivo comprimido
      * Recibe la extension del archivo
      * Lee un arhivo donde se encuentra la tabla de codificacion de huffman
      * Instancia un mapa de la forma caracter,codificacion
      * @param pathAleer
      * @param ext 
      */
-    public static void leerHuffman(String pathAleer,String ext){
+    public void leerHuffman(String pathAleer,String ext){
         try{
             HashMap<String,Character> diccio = new HashMap<>();//Instancio el diccionario
             String sinExtencion=pathAleer.substring(0,pathAleer.length()-4);
@@ -450,9 +468,60 @@ public class PanelHuffman extends javax.swing.JPanel {
                 diccio.put(codigo,a);
             } 
             in.close();
-            exportarDescomprimido(pathAleer, ext,diccio);
+            Object[] datos = exportarDescomprimido(pathAleer, ext,diccio);//retorna el texto descomprimido 
+            String textoDescomprimido = ""+datos[0];
+            byte[] archivoComprimido = (byte[])datos[1];
+            escribirArchivo(textoDescomprimido, sinExtencion+".DUF"); //Descomprimido huf
+            mostrarArchivosVentanas2(textoDescomprimido,archivoComprimido,sinExtencion);
         }catch(IOException e){
             
         }
-    }    
+    }
+ 
+    public void mostrarArchivosVentanas2(String der,byte[] izquierdo,String sinExtencion){
+        File archivoElegido;
+        jEditorPaneDer.setText(der);
+        try {jEditorPaneIzq.setText(new String(izquierdo, "UTF-8"));
+        } catch (UnsupportedEncodingException ex) { Logger.getLogger(PanelHuffman.class.getName()).log(Level.SEVERE, null, ex);}
+        jLabelTamBytesOriginal.setText(izquierdo.length + " bytes");
+        jLabelTamBytesCompr.setText(der.getBytes().length + " bytes");
+        jLabelTamBytesRed.setText((izquierdo.length-der.getBytes().length) + " bytes");
+        jLabelArchCreado.setText(sinExtencion+".DUF");
+        jLabelTablaCreada.setText("-");
+        jLabelTamBytesTabla.setText("-");
+    }
+    /**
+     * Recibe un texto con la informacion que se va guardar en el archivo
+     * Recibe una ruta donde se va a crear/guardar el archivo
+     * Crea el archivo en caso de que no exista con la informacion de texto
+     * @param texto
+     * @param path 
+     */
+    public static void escribirArchivo(String texto,String path){
+        File archivo = null;
+        FileReader fr = null; 
+        try {
+            archivo = new File(path);        
+            BufferedWriter bw;
+            if(archivo.exists()){
+                bw = new BufferedWriter(new FileWriter(archivo));
+            }
+            else{
+                archivo.createNewFile();
+                bw = new BufferedWriter(new FileWriter(archivo));
+            }  
+            bw.write(texto); 
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally { 
+            try {
+                if (null != fr) {
+                    fr.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        } 
+    }
 }
