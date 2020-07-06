@@ -1,10 +1,9 @@
 package teoriainfocodificacion;
 
 import java.util.Random;
-
 /**
  * 
- * @author Fran
+ * @author francisco
  */
 public class Hamming {
     /**
@@ -143,7 +142,6 @@ public class Hamming {
      */
     public static boolean[] getRedundante(boolean[] arregloBits) {
         int cantRed = getBitsRedDeHamming(arregloBits);
-        System.out.println(cantRed);
         boolean[] arrInfo = new boolean[cantRed+1];
         int j = -1;
         for (int i = 1; i < arregloBits.length; i++) {
@@ -167,13 +165,11 @@ public class Hamming {
         int cantRed = getBitsRedDeHamming(arregloBits);
         boolean[] arrInfo = new boolean[arregloBits.length - cantRed];
         boolean[] aux;
-        System.out.println(arrInfo.length);
         aux = (arreglar) ? arreglar(arregloBits) : arregloBits.clone();
         int j = -1;
         for (int i = 3; i < aux.length; i++) {
             if ((i & i - 1) != 0) {//Esto devuelve si no es potencia de 2
                 j++;
-               // System.out.println("j="+j+" i="+i);
                 arrInfo[j] = aux[i-1];
             }
         }
@@ -204,7 +200,7 @@ public class Hamming {
         for(int i = 0; i < aux.length; i++){//Recorre el arreglo de bytes
             for(int t = 0; t < 8; t++) {
                 if((i * 8 + t)==arregloBits.length)//Si me quede sin bits
-                    break;
+                    return aux;
                 if(arregloBits[i * 8 + t]) {
                     aux[i] |= (128 >> t);//Le pone el bit correspondiente al byte i en la posicion t
                 }
@@ -294,16 +290,4 @@ public class Hamming {
         return -1;
     }
     
-    /**
-     * Retorna la concatenacion del arreglo a con el b
-     * @param a
-     * @param b
-     * @return 
-     */
-    public static boolean [] concat(boolean []a,boolean []b){
-        boolean [] retorno = new boolean[a.length+b.length];
-        System.arraycopy(a, 0, retorno, 0, a.length);
-        System.arraycopy(b, 0, retorno, a.length, b.length);
-        return retorno;
-    }
 }

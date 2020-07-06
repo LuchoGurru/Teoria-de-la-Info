@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.JOptionPane;
 /**
@@ -19,8 +20,12 @@ public class PanelHamming extends javax.swing.JPanel {
     private static String archivoElegido;
     private String archivoIzq;
     private String archivoDer;
-    private boolean[] aGuardarHamming;
+    private boolean[][] aGuardarHamming;
     private int totalBitsAleer,bloqueHamming; // inicializo en Proteger archivo
+    private int tamOrig;
+    private int tamRedun;
+    private int tamRotos;
+    private int tamHamm;
 
     public PanelHamming() {
         initComponents();
@@ -75,6 +80,19 @@ public class PanelHamming extends javax.swing.JPanel {
         jComboListaArchivos = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
         jLabelArchivoElegido = new javax.swing.JLabel();
+        panelEstadisticas = new javax.swing.JPanel();
+        labelTamOrg = new javax.swing.JLabel();
+        labelEditableTamOrg = new javax.swing.JLabel();
+        labelTamaHam = new javax.swing.JLabel();
+        labelTamHamEdit = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        labelBitsRedEditable = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        labelBitRotosEditable = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        labelTamBloqueEdit = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        labelCantBloquesEdit = new javax.swing.JLabel();
 
         jPanelIzq.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
         jPanelIzq.setMinimumSize(new java.awt.Dimension(372, 531));
@@ -110,6 +128,7 @@ public class PanelHamming extends javax.swing.JPanel {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2), "Codificacion Hamming de Archivos txt.", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI Historic", 1, 14))); // NOI18N
 
         jButton3.setText("Dañar Archivo");
+        jButton3.setEnabled(false);
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -226,6 +245,83 @@ public class PanelHamming extends javax.swing.JPanel {
                 .addGap(83, 83, 83))
         );
 
+        panelEstadisticas.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2), "Estadisticas"));
+
+        labelTamOrg.setText("Tamaño original:");
+
+        labelEditableTamOrg.setText("-");
+
+        labelTamaHam.setText("Tamaño Hamming:");
+
+        labelTamHamEdit.setText("-");
+
+        jLabel6.setText("Cantidad bits redundantes:");
+
+        labelBitsRedEditable.setText("-");
+
+        jLabel9.setText("Cantidad bits dañados");
+
+        labelBitRotosEditable.setText("-");
+
+        jLabel8.setText("Tamaño del Bloque:");
+
+        labelTamBloqueEdit.setText("-");
+
+        jLabel11.setText("Cantidad de Bloques:");
+
+        labelCantBloquesEdit.setText("-");
+
+        javax.swing.GroupLayout panelEstadisticasLayout = new javax.swing.GroupLayout(panelEstadisticas);
+        panelEstadisticas.setLayout(panelEstadisticasLayout);
+        panelEstadisticasLayout.setHorizontalGroup(
+            panelEstadisticasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelEstadisticasLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelEstadisticasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelTamOrg)
+                    .addComponent(labelEditableTamOrg)
+                    .addComponent(labelTamaHam)
+                    .addComponent(labelTamHamEdit))
+                .addGap(185, 185, 185)
+                .addGroup(panelEstadisticasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(labelBitsRedEditable)
+                    .addComponent(jLabel9)
+                    .addComponent(labelBitRotosEditable))
+                .addGap(202, 202, 202)
+                .addGroup(panelEstadisticasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelCantBloquesEdit)
+                    .addComponent(jLabel11)
+                    .addComponent(labelTamBloqueEdit)
+                    .addComponent(jLabel8))
+                .addContainerGap(184, Short.MAX_VALUE))
+        );
+        panelEstadisticasLayout.setVerticalGroup(
+            panelEstadisticasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelEstadisticasLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelEstadisticasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelTamOrg)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel8))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panelEstadisticasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelEditableTamOrg)
+                    .addComponent(labelBitsRedEditable)
+                    .addComponent(labelTamBloqueEdit))
+                .addGap(18, 18, 18)
+                .addGroup(panelEstadisticasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelTamaHam)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel11))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panelEstadisticasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelTamHamEdit)
+                    .addComponent(labelBitRotosEditable)
+                    .addComponent(labelCantBloquesEdit))
+                .addContainerGap(13, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -234,8 +330,12 @@ public class PanelHamming extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jPanelIzq, javax.swing.GroupLayout.PREFERRED_SIZE, 473, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(511, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanelIzq, javax.swing.GroupLayout.PREFERRED_SIZE, 473, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(panelEstadisticas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addContainerGap(864, Short.MAX_VALUE)
@@ -250,13 +350,15 @@ public class PanelHamming extends javax.swing.JPanel {
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanelIzq, javax.swing.GroupLayout.PREFERRED_SIZE, 533, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(panelEstadisticas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jPanelDer, javax.swing.GroupLayout.PREFERRED_SIZE, 533, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(154, Short.MAX_VALUE)))
+                    .addContainerGap(169, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -307,6 +409,11 @@ public class PanelHamming extends javax.swing.JPanel {
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         String nombreArchivo = jComboArchivosADecodificar.getItemAt(jComboArchivosADecodificar.getSelectedIndex());
         String ext = nombreArchivo.substring(nombreArchivo.length()-3);//Extencion
+        if(ext.contains("HH")){
+            decodificarArchivo(nombreArchivo, ".HUF",false);
+            return;
+        }
+        
         if(ext.contains("HE")){//Si el archivo esta dañado
             ext = nombreArchivo.substring(nombreArchivo.length()-1);//Tomo el ultimo
             if(0==JOptionPane.showConfirmDialog(null, "¿Desea Arreglar el archivo?","",JOptionPane.YES_NO_OPTION)){
@@ -320,7 +427,8 @@ public class PanelHamming extends javax.swing.JPanel {
                 decodificarArchivo(nombreArchivo, ext,false);
                 //No corregido “.DEx”
             }
-        }else{
+        }
+        else{
             ext = nombreArchivo.substring(nombreArchivo.length()-1);
             //inicializado en el boton  "protegerArchivo()"
             //Aca tengo que armar la extencion DHx
@@ -345,11 +453,15 @@ public class PanelHamming extends javax.swing.JPanel {
     private javax.swing.JEditorPane jEditorPaneDer;
     private javax.swing.JEditorPane jEditorPaneIzq;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelArchHA;
     private javax.swing.JLabel jLabelArchHE;
     private javax.swing.JLabel jLabelArchivoElegido;
@@ -360,6 +472,15 @@ public class PanelHamming extends javax.swing.JPanel {
     private javax.swing.JPanel jPanelIzq;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JLabel labelBitRotosEditable;
+    private javax.swing.JLabel labelBitsRedEditable;
+    private javax.swing.JLabel labelCantBloquesEdit;
+    private javax.swing.JLabel labelEditableTamOrg;
+    private javax.swing.JLabel labelTamBloqueEdit;
+    private javax.swing.JLabel labelTamHamEdit;
+    private javax.swing.JLabel labelTamOrg;
+    private javax.swing.JLabel labelTamaHam;
+    private javax.swing.JPanel panelEstadisticas;
     // End of variables declaration//GEN-END:variables
     public void elegirArchivo(String urlArch){
         archivoElegido=urlArch;
@@ -371,31 +492,31 @@ public class PanelHamming extends javax.swing.JPanel {
         String ext="";
         switch(jComboHamming.getSelectedIndex()){//Seleccionado en Panel
             case 0:{
-                ext=".HA1";
+                ext=(archivoElegido.substring(archivoElegido.length()-3).equals("HUF"))?".HH1":".HA1";
                 bloqueHamming=32;
                 totalBitsAleer= cantBitsInfo(bloqueHamming);
                 break;
             }
             case 1:{
-                ext=".HA2";
+                ext=(archivoElegido.substring(archivoElegido.length()-3).equals("HUF"))?".HH2":".HA2";
                 bloqueHamming=128;
                 totalBitsAleer= cantBitsInfo(bloqueHamming);
                 break;
             }
             case 2:{
-                ext=".HA3";
+                ext=(archivoElegido.substring(archivoElegido.length()-3).equals("HUF"))?".HH3":".HA3";
                 bloqueHamming=1024;
                 totalBitsAleer= cantBitsInfo(bloqueHamming);
                 break;
             }
             case 3:{
-                ext=".HA4";
+                ext=(archivoElegido.substring(archivoElegido.length()-3).equals("HUF"))?".HH5":".HA5";
                 bloqueHamming=4096;
                 totalBitsAleer= cantBitsInfo(bloqueHamming);
                 break;
             }
             case 4:{
-                ext=".HA5";
+                ext=(archivoElegido.substring(archivoElegido.length()-3).equals("HUF"))?".HH5":".HA5";
                 bloqueHamming=16384;
                 totalBitsAleer= cantBitsInfo(bloqueHamming);
                 break;
@@ -435,26 +556,22 @@ public class PanelHamming extends javax.swing.JPanel {
         String lineaDeBits="";
         int hasta = cantBitsInfo-1; //EJ: 26
         int desde = 0;
-        boolean primera = true;
+        float auxBloques = cantBitsInfo/8.f;
+        aGuardarHamming = new boolean[(int)Math.ceil(bytesArchivo.length/auxBloques)][];
+        int auxIndiceBloques = 0;
+        
         while(hasta/8<bytesArchivo.length){
             boolean bitsInfo[] = Hamming.getIntervaloBits(bytesArchivo, desde, hasta);
-            boolean bitsHamming[] = Hamming.getHamming(bitsInfo);
-            if(primera){
-                aGuardarHamming = bitsHamming;
-                primera = false;
-            }
-            else{
-                aGuardarHamming = Hamming.concat(aGuardarHamming, bitsHamming);//Concateno el arreglo hamminizado al arreglo que voy a guardar en archivo
-            }
+            aGuardarHamming[auxIndiceBloques] = Hamming.getHamming(bitsInfo);
             desde = hasta+1;
             hasta += cantBitsInfo;
-            lineaDeBits += Hamming.toString(bitsHamming)+" ";  //le meto el bloque hamminizado
+            lineaDeBits += new String(Hamming.toBytes(aGuardarHamming[auxIndiceBloques]))+'\n';  //le meto el bloque hamminizado
+            auxIndiceBloques++;
         }
         if(desde/8 < bytesArchivo.length){
             boolean bitsInfo[] = Hamming.getIntervaloBits(bytesArchivo, desde, hasta);
-            boolean bitsHamming[] = Hamming.getHamming(bitsInfo);
-            aGuardarHamming = Hamming.concat(aGuardarHamming, bitsHamming);
-            lineaDeBits += Hamming.toString(bitsHamming);
+            aGuardarHamming[auxIndiceBloques] = Hamming.getHamming(bitsInfo);
+            lineaDeBits += new String(Hamming.toBytes(aGuardarHamming[auxIndiceBloques]));
         }
         return lineaDeBits;
     }
@@ -462,6 +579,9 @@ public class PanelHamming extends javax.swing.JPanel {
     public void romperArchivo(String pathAleer, int bitsBloque,String ext){
         try {
             byte[] bytes  = Files.readAllBytes(Paths.get("./"+pathAleer));
+            this.tamOrig = bytes.length;
+            this.tamHamm = aGuardarHamming.length/8;
+            this.tamRedun = tamHamm - tamOrig;
             String sinExtencion = archivoElegido.substring(0, archivoElegido.length()-4);//Saco la extencion
             File archivo2 = new File("./"+sinExtencion+ext);//archivo roto
             boolean [] bits = Hamming.getIntervaloBits(bytes, 0, bytes.length*8-1);
@@ -472,11 +592,13 @@ public class PanelHamming extends javax.swing.JPanel {
             double romper;
             int posRomper;
             int i=0;
+            this.tamRotos=0;
             while(i<bits.length){
                 romper = Math.random();
                 if(romper<=prob){
                     posRomper = random.nextInt(bitsBloque-1); //retorna un int entre 0 y bloque-1
                     bits[i+posRomper] = !bits[i+posRomper];
+                    tamRotos++;
                 }
                 i+=bitsBloque;
             }
@@ -484,7 +606,8 @@ public class PanelHamming extends javax.swing.JPanel {
             OutputStream out = new FileOutputStream(archivo2);
             
             out.write(Hamming.toBytes(bits));
-            out.close(); 
+            out.close();
+            
             jComboArchivosADecodificar.addItem(archivo2.getPath().substring(2));//Añado archivo a decodificar
             mostrarArchivos(Paths.get(archivoElegido).toString(), archivo2.getPath(), datos, rotos); 
         } catch (Exception e) {
@@ -495,63 +618,103 @@ public class PanelHamming extends javax.swing.JPanel {
     /**
      * Recibe la cantidad de BITS de informacion necesaria para cada bloque Hamming.
      * @param cantBits 
+     * @param extArchivo 
      */
     public void readFileToBynari(int cantBits,String extArchivo){
         String aImprimir;
         try {
-            String contenido ="linea 448";// Files.readString(Paths.get(archivoElegido));
             String sinExtencion = archivoElegido.substring(0, archivoElegido.length()-4);//Saco la extencion
-            File archivo2 = new File("./"+sinExtencion+extArchivo);//.HAx
+            File archivo2 = new File(sinExtencion+extArchivo);//.HAx
             
-            byte[] bytes  = Files.readAllBytes(Paths.get("./"+archivoElegido));
-            System.out.println("lei bytes");
+            byte[] bytes  = Files.readAllBytes(Paths.get(archivoElegido));
+            this.tamOrig = bytes.length;
             aImprimir = arrBytesToHammingString(bytes, cantBits);
-            System.out.println("hamminice");
+            
             OutputStream out = new FileOutputStream(archivo2);
             
-            out.write(Hamming.toBytes(aGuardarHamming));
+            for (boolean[] aGuardarHamming1 : aGuardarHamming) {
+                out.write(Hamming.toBytes(aGuardarHamming1));
+            }
+            
+            String contenido = new String(bytes);
+            this.tamHamm = (aGuardarHamming.length*bloqueHamming)/8;
+            this.tamRedun = tamHamm - tamOrig;
+            this.tamRotos = 0;
             out.close(); 
             jComboArchivosADecodificar.addItem(archivo2.getPath().substring(2));//Añado archivo a decodificar
-            mostrarArchivos(Paths.get(archivoElegido).toString(), archivo2.getPath(), contenido, aImprimir); 
+            mostrarArchivos(Paths.get(archivoElegido).toString(), archivo2.getPath(), contenido, aImprimir);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
     
-    public String decodificar(byte []codigo,int tamBloque,boolean arreglar){ 
-            String auxString="";
-            String aEscribir;
-            String retorno="";
-            int hasta = tamBloque-1;
-            int desde = 0;
-            byte[] bytesAux = codigo;
-            byte byteAux;
-            while(hasta/8<bytesAux.length){//Si bloque <  final del String
-                boolean [] arr = Hamming.getIntervaloBits(bytesAux, desde, hasta);
-                desde = hasta+1;
-                hasta += tamBloque;
-                arr = Hamming.getInfo(arr,arreglar);
-                auxString += Hamming.toString(arr);
+    public String decodificar2(boolean[]codigo, int tamBloque,boolean arreglar){
+        String auxString="";
+        String aEscribir;
+        String retorno="";
+        int hasta = tamBloque-1;
+        int desde = 0,i=0,t=0;
+        byte byteAux;
+        boolean []arrAux = new boolean[tamBloque];
+        while(desde<codigo.length){//Si bloque <  final del String
+            while(i<hasta){
+                arrAux[t] = codigo[i];
+                i++;
+                t++;
             }
-            if(desde/8<bytesAux.length){
-                boolean [] arr = Hamming.getIntervaloBits(bytesAux, desde, hasta);
-                arr = Hamming.getInfo(arr,arreglar);
-                auxString += Hamming.toString(arr);
+            t=0;
+            desde = hasta+1;
+            hasta += tamBloque;
+            boolean []arr = Hamming.getInfo(arrAux,arreglar);
+            auxString += Hamming.toString(arr);
+        }
+        while(8<auxString.length()){
+            aEscribir = auxString.substring(0, 8);
+            auxString = auxString.substring(8);
+            try{
+                byteAux = Byte.parseByte(aEscribir, 2);
             }
-            while(8<auxString.length()){
-                aEscribir = auxString.substring(0, 8);
-                auxString = auxString.substring(8);
-                try{
-                    byteAux = Byte.parseByte(aEscribir, 2);
-                }
-                catch(NumberFormatException e){
-                    byteAux = '\0';
-                }
-                if(byteAux == 0)
-                    continue;
-                retorno +=(char)byteAux;
+            catch(NumberFormatException e){
+                byteAux = '\0';
             }
+            if(byteAux==0){
+                continue;
+            }
+            retorno +=(char)byteAux;
+        }
         return retorno;
+    }
+    
+    public byte[] decodificar(byte []codigo,int tamBloque,boolean arreglar, boolean huffman){ 
+        String auxString="";
+        String aEscribir;
+        int hasta = tamBloque-1;
+        int desde = 0;
+        byte[] bytesAux = codigo;
+        byte byteAux;
+        while(hasta/8<bytesAux.length){//Si bloque <  final del String
+            boolean [] arr = Hamming.getIntervaloBits(bytesAux, desde, hasta);
+            desde = hasta+1;
+            hasta += tamBloque;
+            arr = Hamming.getInfo(arr,arreglar);
+            auxString += Hamming.toString(arr);
+        }
+        if(desde/8<bytesAux.length){
+            boolean [] arr = Hamming.getIntervaloBits(bytesAux, desde, hasta);
+            arr = Hamming.getInfo(arr,arreglar);
+            auxString += Hamming.toString(arr);
+        }
+        ArrayList<Byte> bytesDinamico = new ArrayList<>();
+        byte aux;
+        while(8<auxString.length()){
+            aEscribir = auxString.substring(0, 8);
+            auxString = auxString.substring(8);
+            aux = (byte) Integer.parseInt(aEscribir, 2);
+            if(aux != 0 || huffman){
+                bytesDinamico.add(aux);
+            }
+        }
+        return Nodo.getArregloDeBytes(bytesDinamico);
     }
     
     /**
@@ -564,24 +727,19 @@ public class PanelHamming extends javax.swing.JPanel {
     public void readFileToText(String pathAleer,int bitsAleer, int bitsBloque,String ext,boolean arreglar){ 
         try {
             byte[] bytes  = Files.readAllBytes(Paths.get("./"+pathAleer));
-            
+            this.tamHamm = bytes.length;
+            //boolean [] bitsArchivo = Hamming.getIntervaloBits(bytes, 0, bytes.length*8-1);
             String textoIzq = Hamming.toString(Hamming.getIntervaloBits(bytes, 0, bytes.length*8-1));
             String sinExtencion = pathAleer.substring(0, pathAleer.length()-4);   //Saco la extencion
             
             File archivo2 = new File("./"+sinExtencion+ext);//.H
-            BufferedWriter bw;
+            OutputStream bw = new FileOutputStream(archivo2);
             
-            if(archivo2.exists()){
-                bw = new BufferedWriter(new FileWriter(archivo2));
-            }
-            else{
-                archivo2.createNewFile();
-                bw = new BufferedWriter(new FileWriter(archivo2));
-            }
+            byte[]aEscribir=decodificar(bytes, bitsBloque,arreglar, ext.equals("HUF"));
             
-            String textoDer;
-            textoDer=decodificar(bytes, bitsBloque,arreglar);
-            
+            String textoDer = new String(aEscribir);
+            this.tamOrig = aEscribir.length;
+            bw.write(aEscribir);
             bw.close();
             mostrarArchivos("./"+pathAleer, archivo2.getPath(),textoIzq,textoDer);
         } catch (Exception e) {
@@ -617,5 +775,11 @@ public class PanelHamming extends javax.swing.JPanel {
         jLabelTituloDer.setText(archivoDer.substring(2,archivoDer.length()));
         this.jEditorPaneDer.setText(textoDer);
         this.jEditorPaneIzq.setText(textoIzq);
+        this.labelBitsRedEditable.setText(""+this.tamRedun);
+        this.labelTamHamEdit.setText(""+this.tamHamm);
+        this.labelEditableTamOrg.setText(""+this.tamOrig);
+        this.labelBitRotosEditable.setText(""+this.tamRotos);
+        this.labelTamBloqueEdit.setText(""+this.bloqueHamming);
+        this.labelCantBloquesEdit.setText(""+(this.aGuardarHamming.length/bloqueHamming));
     }
 }

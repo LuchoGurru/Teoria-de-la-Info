@@ -14,8 +14,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -386,7 +384,7 @@ public class PanelHuffman extends javax.swing.JPanel {
             String linea;
             String textoOriginal="";
             boolean primero = true;
-            while ((linea = br.readLine()) != null) { 
+            while ((linea = br.readLine()) != null) {
                 if(primero){
                     primero = false;
                     textoOriginal += linea;
