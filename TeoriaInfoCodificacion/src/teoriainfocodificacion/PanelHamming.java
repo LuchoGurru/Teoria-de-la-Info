@@ -409,22 +409,28 @@ public class PanelHamming extends javax.swing.JPanel {
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         String nombreArchivo = jComboArchivosADecodificar.getItemAt(jComboArchivosADecodificar.getSelectedIndex());
         String ext = nombreArchivo.substring(nombreArchivo.length()-3);//Extencion
+        System.out.println(nombreArchivo);
         if(ext.contains("HH")){
-            decodificarArchivo(nombreArchivo, ".HUF",false);
-            return;
+            readFileToText(nombreArchivo,totalBitsAleer, bloqueHamming,".HUF",false);
         }
-        
-        if(ext.contains("HE")){//Si el archivo esta dañado
+        else if (ext.contains("EH")){ //Hufman con error
+            if(0==JOptionPane.showConfirmDialog(null, "¿Desea Arreglar el archivo?","",JOptionPane.YES_NO_OPTION)){
+                readFileToText(nombreArchivo,totalBitsAleer, bloqueHamming,".HUF",true);
+            }else{
+                readFileToText(nombreArchivo,totalBitsAleer, bloqueHamming,".HEF",false);
+            }
+        }
+        else if(ext.contains("HE")){//Si el archivo esta dañado
             ext = nombreArchivo.substring(nombreArchivo.length()-1);//Tomo el ultimo
             if(0==JOptionPane.showConfirmDialog(null, "¿Desea Arreglar el archivo?","",JOptionPane.YES_NO_OPTION)){
                 //Aca tengo que armar la extencion DHx
                 ext =".DH"+ext;
-                decodificarArchivo(nombreArchivo, ext,true);
+                readFileToText(nombreArchivo,totalBitsAleer, bloqueHamming,ext,true);
                 //Corregido “.DHx”
             }else{
                 //Aca tengo que armar la extencion DEx
                 ext =".DE"+ext;
-                decodificarArchivo(nombreArchivo, ext,false);
+                readFileToText(nombreArchivo,totalBitsAleer, bloqueHamming,ext,false);
                 //No corregido “.DEx”
             }
         }
@@ -433,7 +439,7 @@ public class PanelHamming extends javax.swing.JPanel {
             //inicializado en el boton  "protegerArchivo()"
             //Aca tengo que armar la extencion DHx
             ext =".DH"+ext;
-            decodificarArchivo(nombreArchivo, ext,false);
+            readFileToText(nombreArchivo,totalBitsAleer, bloqueHamming,ext,false);
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -484,7 +490,6 @@ public class PanelHamming extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
     public void elegirArchivo(String urlArch){
         archivoElegido=urlArch;
-        //archivoIzq=urlArch;
     }
     
     public void protegerArchivo(){  
@@ -523,13 +528,6 @@ public class PanelHamming extends javax.swing.JPanel {
             }
         }
         readFileToBynari(totalBitsAleer,ext);
-    }
-    
-    public void decodificarArchivo(String nameArchivo,String ext,boolean arreglar){ 
-        //El totalBitsaleer y el bloqueHamming los tenemos globales e inicializados en la funcion de arriba "protegerArchivo()"
-        //Te paso la extencion para ponerle al archivo que vas a crear
-        //↓Ver javadoc↓ ahi explico los parametros
-        readFileToText(nameArchivo,totalBitsAleer, bloqueHamming,ext,arreglar);
     }
     
     public int cantBitsInfo(int ham){
@@ -624,7 +622,7 @@ public class PanelHamming extends javax.swing.JPanel {
         String aImprimir;
         try {
             String sinExtencion = archivoElegido.substring(0, archivoElegido.length()-4);//Saco la extencion
-            File archivo2 = new File(sinExtencion+extArchivo);//.HAx
+            File archivo2 = new File(sinExtencion+extArchivo);//.HAx o HHx
             
             byte[] bytes  = Files.readAllBytes(Paths.get(archivoElegido));
             this.tamOrig = bytes.length;
@@ -640,49 +638,22 @@ public class PanelHamming extends javax.swing.JPanel {
             this.tamHamm = (aGuardarHamming.length*bloqueHamming)/8;
             this.tamRedun = tamHamm - tamOrig;
             this.tamRotos = 0;
-            out.close(); 
+            out.close();
+            if(extArchivo.contains("HH")){ //El archivo era HUF, osea tengo que crear un HHx
+                byte [] bytestabla = Files.readAllBytes(Paths.get(sinExtencion+".TUF"));
+                tamOrig += bytestabla.length;
+                File tabla = new File(sinExtencion+".TH"+extArchivo.substring(extArchivo.length()-1)); //La tabla protegida es THx
+                out = new FileOutputStream(tabla);
+                arrBytesToHammingString(bytestabla,cantBits);
+                for (boolean[] aGuardarHamming1 : aGuardarHamming) {
+                    out.write(Hamming.toBytes(aGuardarHamming1));
+                }
+            }
             jComboArchivosADecodificar.addItem(archivo2.getPath().substring(2));//Añado archivo a decodificar
             mostrarArchivos(Paths.get(archivoElegido).toString(), archivo2.getPath(), contenido, aImprimir);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    
-    public String decodificar2(boolean[]codigo, int tamBloque,boolean arreglar){
-        String auxString="";
-        String aEscribir;
-        String retorno="";
-        int hasta = tamBloque-1;
-        int desde = 0,i=0,t=0;
-        byte byteAux;
-        boolean []arrAux = new boolean[tamBloque];
-        while(desde<codigo.length){//Si bloque <  final del String
-            while(i<hasta){
-                arrAux[t] = codigo[i];
-                i++;
-                t++;
-            }
-            t=0;
-            desde = hasta+1;
-            hasta += tamBloque;
-            boolean []arr = Hamming.getInfo(arrAux,arreglar);
-            auxString += Hamming.toString(arr);
-        }
-        while(8<auxString.length()){
-            aEscribir = auxString.substring(0, 8);
-            auxString = auxString.substring(8);
-            try{
-                byteAux = Byte.parseByte(aEscribir, 2);
-            }
-            catch(NumberFormatException e){
-                byteAux = '\0';
-            }
-            if(byteAux==0){
-                continue;
-            }
-            retorno +=(char)byteAux;
-        }
-        return retorno;
     }
     
     public byte[] decodificar(byte []codigo,int tamBloque,boolean arreglar, boolean huffman){ 
@@ -691,7 +662,6 @@ public class PanelHamming extends javax.swing.JPanel {
         int hasta = tamBloque-1;
         int desde = 0;
         byte[] bytesAux = codigo;
-        byte byteAux;
         while(hasta/8<bytesAux.length){//Si bloque <  final del String
             boolean [] arr = Hamming.getIntervaloBits(bytesAux, desde, hasta);
             desde = hasta+1;
@@ -734,8 +704,19 @@ public class PanelHamming extends javax.swing.JPanel {
             
             File archivo2 = new File("./"+sinExtencion+ext);//.H
             OutputStream bw = new FileOutputStream(archivo2);
+            byte[]aEscribir;
             
-            byte[]aEscribir=decodificar(bytes, bitsBloque,arreglar, ext.equals("HUF"));
+            if(ext.equals(".HUF") || ext.equals(".HEF")){
+                aEscribir=decodificar(bytes, bitsBloque,arreglar, true);
+                byte[] tabla = Files.readAllBytes(Paths.get("./"+sinExtencion+(ext.equals(".HUF")?".TH":".TE")+pathAleer.substring(pathAleer.length()-1)));
+                File archivo3 = new File("./"+sinExtencion+(ext.equals(".HUF")?".TUF":".TEF"));
+                OutputStream os = new FileOutputStream(archivo3);
+                tabla = decodificar(tabla,bitsBloque,arreglar, false);
+                os.write(tabla);
+            }
+            else{
+                aEscribir=decodificar(bytes, bitsBloque,arreglar, false);
+            }
             
             String textoDer = new String(aEscribir);
             this.tamOrig = aEscribir.length;
@@ -762,6 +743,7 @@ public class PanelHamming extends javax.swing.JPanel {
     }
     /**
      * Recibe dos archivos y los imprime, no hay mucha vuelta.
+     * @param izq
      * @param textoIzq    * @param izq
      * @param der 
      * @param textoDer 
@@ -780,6 +762,6 @@ public class PanelHamming extends javax.swing.JPanel {
         this.labelEditableTamOrg.setText(""+this.tamOrig);
         this.labelBitRotosEditable.setText(""+this.tamRotos);
         this.labelTamBloqueEdit.setText(""+this.bloqueHamming);
-        this.labelCantBloquesEdit.setText(""+(this.aGuardarHamming.length/bloqueHamming));
+        this.labelCantBloquesEdit.setText(""+(this.tamHamm*8/bloqueHamming));
     }
 }
