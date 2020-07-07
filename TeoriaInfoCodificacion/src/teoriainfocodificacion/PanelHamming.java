@@ -1,10 +1,8 @@
 
 package teoriainfocodificacion;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -364,40 +362,41 @@ public class PanelHamming extends javax.swing.JPanel {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         bloqueHamming=0;
-        String ext="";
+        String nombreArchivo = jComboArchivosADecodificar.getItemAt(jComboArchivosADecodificar.getSelectedIndex());
+        String ext=nombreArchivo.substring(nombreArchivo.length()-3);
+        ext=ext.contains("HA")?".HE":".EH";
         switch(jComboHamming.getSelectedIndex()){//Seleccionado en Panel
             case 0:{
-                ext=".HE1";
+                ext+='1';
                 bloqueHamming=32;
                 totalBitsAleer= cantBitsInfo(bloqueHamming);
                 break;
             }
             case 1:{
-                ext=".HE2";
+                ext+='2';
                 bloqueHamming=128;
                 totalBitsAleer= cantBitsInfo(bloqueHamming);
                 break;
             }
             case 2:{
-                ext=".HE3";
+                ext+='3';
                 bloqueHamming=1024;
                 totalBitsAleer= cantBitsInfo(bloqueHamming);
                 break;
             }
             case 3:{
-                ext=".HE4";
+                ext+='4';
                 bloqueHamming=4096;
                 totalBitsAleer= cantBitsInfo(bloqueHamming);
                 break;
             }
             case 4:{
-                ext=".HE5";
+                ext+='5';
                 bloqueHamming=16384;
                 totalBitsAleer= cantBitsInfo(bloqueHamming);
                 break;
             }
         }
-        String nombreArchivo = jComboArchivosADecodificar.getItemAt(jComboArchivosADecodificar.getSelectedIndex());
         romperArchivo(nombreArchivo, bloqueHamming, ext);
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -409,7 +408,6 @@ public class PanelHamming extends javax.swing.JPanel {
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         String nombreArchivo = jComboArchivosADecodificar.getItemAt(jComboArchivosADecodificar.getSelectedIndex());
         String ext = nombreArchivo.substring(nombreArchivo.length()-3);//Extencion
-        System.out.println(nombreArchivo);
         if(ext.contains("HH")){
             readFileToText(nombreArchivo,totalBitsAleer, bloqueHamming,".HUF",false);
         }
@@ -582,8 +580,9 @@ public class PanelHamming extends javax.swing.JPanel {
             this.tamRedun = tamHamm - tamOrig;
             String sinExtencion = archivoElegido.substring(0, archivoElegido.length()-4);//Saco la extencion
             File archivo2 = new File("./"+sinExtencion+ext);//archivo roto
+            //HE archivo normal EH archivo huffman dañado
             boolean [] bits = Hamming.getIntervaloBits(bytes, 0, bytes.length*8-1);
-            String datos = Hamming.toString(bits);
+            String datos = new String(Hamming.toBytes(bits));
             
             Random random = new Random();
             float prob = 0.2f;//20% de prob de romper el byte i
@@ -600,14 +599,38 @@ public class PanelHamming extends javax.swing.JPanel {
                 }
                 i+=bitsBloque;
             }
-            String rotos = Hamming.toString(bits);
+            bytes = Hamming.toBytes(bits);
+            String rotos = new String(bytes);
             OutputStream out = new FileOutputStream(archivo2);
             
-            out.write(Hamming.toBytes(bits));
+            out.write(bytes);
             out.close();
-            
             jComboArchivosADecodificar.addItem(archivo2.getPath().substring(2));//Añado archivo a decodificar
-            mostrarArchivos(Paths.get(archivoElegido).toString(), archivo2.getPath(), datos, rotos); 
+            mostrarArchivos(Paths.get(archivoElegido).toString(), archivo2.getPath(), datos, rotos);
+            
+            if(ext.contains("EH")){
+                String tablaRota = sinExtencion+".TE"+ext.substring(ext.length()-1);
+                String tabla = sinExtencion+".TH"+ext.substring(ext.length()-1);
+                bytes = Files.readAllBytes(Paths.get(tabla));
+                tamOrig += bytes.length;
+                archivo2 = new File(tablaRota);
+                out = new FileOutputStream(archivo2);
+                bits = Hamming.getIntervaloBits(bytes, 0, bytes.length*8-1);
+                i=0;
+                while(i<bits.length){
+                    romper = Math.random();
+                    if(romper<=prob){
+                        posRomper = random.nextInt(bitsBloque-1); //retorna un int entre 0 y bloque-1
+                        bits[i+posRomper] = !bits[i+posRomper];
+                        tamRotos++;
+                    }
+                    i+=bitsBloque;
+                }
+                bytes = Hamming.toBytes(bits);
+                out.write(bytes);
+                out.close();
+            }
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -650,6 +673,7 @@ public class PanelHamming extends javax.swing.JPanel {
                 }
             }
             jComboArchivosADecodificar.addItem(archivo2.getPath().substring(2));//Añado archivo a decodificar
+            this.jButton3.setEnabled(true);
             mostrarArchivos(Paths.get(archivoElegido).toString(), archivo2.getPath(), contenido, aImprimir);
         } catch (Exception e) {
             e.printStackTrace();

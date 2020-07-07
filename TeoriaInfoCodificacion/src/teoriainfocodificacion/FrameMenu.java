@@ -5,6 +5,15 @@
  */
 package teoriainfocodificacion;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Instant;
+import java.util.Date;
+
 /**
  *
  * @author Lucho
@@ -159,16 +168,29 @@ public class FrameMenu extends javax.swing.JFrame {
         jDialog1.setVisible(true);
         return;
     }//GEN-LAST:event_jButton3ActionPerformed
-
+      
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(String args[]) throws MalformedURLException, IOException {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
+        
+        URL url = new URL("https://currentmillis.com/time/minutes-since-unix-epoch.php");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        long minutes = Long.parseLong(in.readLine());
+        in.close();
+        con.disconnect();
+        Instant instant = Instant.ofEpochSecond(minutes * 60);
+        System.out.println(instant.toString());
+        Date fecha = Date.from(instant);
+        System.out.println("Fecha " + fecha);
+        
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
