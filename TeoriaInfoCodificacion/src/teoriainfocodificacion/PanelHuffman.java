@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import static teoriainfocodificacion.Nodo.escribirHuffman;
 import static teoriainfocodificacion.Nodo.exportarDescomprimido;
 import static teoriainfocodificacion.Nodo.getArbol;
@@ -220,11 +221,11 @@ public class PanelHuffman extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-                                .addComponent(jLabelArchCreado, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(jLabelArchCreado, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
 
@@ -347,7 +348,7 @@ public class PanelHuffman extends javax.swing.JPanel {
         Date fechaDescompresion=jDateChooser2.getDate();
         String fechaEnNumero="";
         if( fechaDescompresion!=null){
-            fechaEnNumero = ""+(fechaDescompresion.getYear()+1900)+(fechaDescompresion.getMonth()+1)+(fechaDescompresion.getDay()+5);
+            fechaEnNumero = ""+(fechaDescompresion.getYear()+1900)+(fechaDescompresion.getMonth()+1)+(fechaDescompresion.getDate());
         }else{
             fechaEnNumero = "0";
         }        
@@ -467,7 +468,7 @@ public class PanelHuffman extends javax.swing.JPanel {
         jLabelTamBytesTabla.setText(tabla.length + " bytes");
     }
     
-    public Date getFechaActual() throws MalformedURLException, IOException{
+    public String getFechaActual() throws MalformedURLException, IOException{
         URL url = new URL("https://currentmillis.com/time/minutes-since-unix-epoch.php");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
@@ -476,9 +477,8 @@ public class PanelHuffman extends javax.swing.JPanel {
         in.close();
         con.disconnect();
         Instant instant = Instant.ofEpochSecond(minutes * 60);
-        Date fecha = Date.from(instant);
-        Integer.parseInt(""+(fecha.getYear()+1900)+(fecha.getMonth()+1)+(fecha.getDay()+5));
-        return fecha;
+        Date fecha = Date.from(instant); 
+        return "" +(fecha.getYear()+1900)+(fecha.getMonth()+1)+(fecha.getDate());
     }
     /**
      * Recibe la ruta de un archivo comprimido
@@ -498,37 +498,47 @@ public class PanelHuffman extends javax.swing.JPanel {
             /*Tengo que sacar la fecha aca si o si*/
             int leyendoLaFecha;
             char fech;
-            String fecha ="";
+            String fechaDeDescompresion ="";
             while((leyendoLaFecha = in.read())>= 0){
                 fech=(char)leyendoLaFecha;
                 if(fech!='\n')
-                    fecha +=fech;
+                    fechaDeDescompresion +=fech;
                 else
                     break;
             }
-            System.out.println("Fecha LEida= " + fecha);
-            char a; 
-            int primerByteLeido;
-            while((primerByteLeido = in.read())>= 0){
-                a = (char) primerByteLeido;
-                codigo = "";
-                char control;
-                int byteLeido;
-                while((byteLeido = in.read())>=0){
-                    if ((control = (char) byteLeido) != '\n'){ 
-                        codigo +=control; 
-                    }else{
-                        break;
-                    }
-                }  
-                diccio.put(codigo,a);
-            } 
-            in.close();
-            Object[] datos = exportarDescomprimido(pathAleer, ext,diccio);//retorna el texto descomprimido 
-            String textoDescomprimido = ""+datos[0];
-            byte[] archivoComprimido = (byte[])datos[1];
-            escribirArchivo(textoDescomprimido, sinExtencion+".DUF"); //Descomprimido huf
-            mostrarArchivosVentanas2(textoDescomprimido,archivoComprimido,sinExtencion);
+            String fechaActual = getFechaActual();
+            Integer fd = Integer.parseInt(fechaDeDescompresion);
+            Integer fa = Integer.parseInt(fechaActual);
+            System.out.println("Fecha LEida= " + fechaDeDescompresion + "fecha actual "+ fechaActual);
+            System.out.println("fa-fd = " + (fa-fd));
+            //TERMINO SECUENCIA DE LA FECHA 
+            if(fa>=fd){
+                char a; 
+                int primerByteLeido;
+                while((primerByteLeido = in.read())>= 0){
+                    a = (char) primerByteLeido;
+                    codigo = "";
+                    char control;
+                    int byteLeido;
+                    while((byteLeido = in.read())>=0){
+                        if ((control = (char) byteLeido) != '\n'){ 
+                            codigo +=control; 
+                        }else{
+                            break;
+                        }
+                    }  
+                    diccio.put(codigo,a);
+                } 
+                in.close();
+                Object[] datos = exportarDescomprimido(pathAleer, ext,diccio);//retorna el texto descomprimido 
+                String textoDescomprimido = ""+datos[0];
+                byte[] archivoComprimido = (byte[])datos[1];
+                escribirArchivo(textoDescomprimido, sinExtencion+".DUF"); //Descomprimido huf
+                mostrarArchivosVentanas2(textoDescomprimido,archivoComprimido,sinExtencion);
+            }else{
+                JOptionPane.showMessageDialog(this,"El archivo tiene una fecha de descompreción posterior a la Fecha actual (sacado de internet)","No pudimos descomprimir el archivo",1);
+                in.close();
+            }
         }catch(IOException e){
             
         }

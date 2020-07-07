@@ -35,7 +35,26 @@ public class PanelHamming extends javax.swing.JPanel {
     }
      public void llenarListaArchivos(){
         jComboListaArchivos.removeAllItems(); 
+        String[] archivosPermitidos = {".txt",".doc",".HUF",".wp",".DH",".DE"};
         File directorio = new File("./"); 
+        File[] archivos=null;
+        if(directorio.exists()){
+            archivos = directorio.listFiles();
+        }
+        int i;
+        boolean permitido=false;
+        for(i=0;i<archivos.length;i++){
+            int j;
+            for(j=0;j<archivosPermitidos.length;j++){ 
+                if((""+archivos[i]).contains(archivosPermitidos[j])){ 
+                    permitido=true;
+                    jComboListaArchivos.addItem(""+archivos[i]); 
+                    break;
+                }
+            } 
+        }
+    }
+        /*  File directorio = new File("./"); 
         File[] archivos=null;
         if(directorio.exists()){
             archivos = directorio.listFiles();
@@ -44,7 +63,7 @@ public class PanelHamming extends javax.swing.JPanel {
         for(i=0;i<archivos.length;i++){ 
             jComboListaArchivos.addItem(""+archivos[i]);   
         }
-    }
+    }*/
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -513,7 +532,7 @@ public class PanelHamming extends javax.swing.JPanel {
                 break;
             }
             case 3:{
-                ext=(archivoElegido.substring(archivoElegido.length()-3).equals("HUF"))?".HH5":".HA5";
+                ext=(archivoElegido.substring(archivoElegido.length()-3).equals("HUF"))?".HH4":".HA4";
                 bloqueHamming=4096;
                 totalBitsAleer= cantBitsInfo(bloqueHamming);
                 break;
@@ -723,7 +742,8 @@ public class PanelHamming extends javax.swing.JPanel {
             byte[] bytes  = Files.readAllBytes(Paths.get("./"+pathAleer));
             this.tamHamm = bytes.length;
             //boolean [] bitsArchivo = Hamming.getIntervaloBits(bytes, 0, bytes.length*8-1);
-            String textoIzq = Hamming.toString(Hamming.getIntervaloBits(bytes, 0, bytes.length*8-1));
+            String textoIzq = new String(bytes);
+            //String textoIzq = Hamming.toString(Hamming.getIntervaloBits(bytes, 0, bytes.length*8-1));
             String sinExtencion = pathAleer.substring(0, pathAleer.length()-4);   //Saco la extencion
             
             File archivo2 = new File("./"+sinExtencion+ext);//.H
