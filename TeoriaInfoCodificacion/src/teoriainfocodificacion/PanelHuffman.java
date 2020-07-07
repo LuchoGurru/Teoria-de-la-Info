@@ -13,9 +13,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Level;
@@ -338,7 +344,15 @@ public class PanelHuffman extends javax.swing.JPanel {
     }//GEN-LAST:event_jButtonDescomprimirActionPerformed
 
     private void jButtonComprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonComprimirActionPerformed
-        crearListaDefrecuencias(jLabelArchivoElegido.getText());
+        Date fechaDescompresion=jDateChooser2.getDate();
+        String fechaEnNumero="";
+        if( fechaDescompresion!=null){
+            fechaEnNumero = ""+(fechaDescompresion.getYear()+1900)+(fechaDescompresion.getMonth()+1)+(fechaDescompresion.getDay()+5);
+        }else{
+            fechaEnNumero = "0";
+        }        
+        System.out.println("fechaEnNumero = " + fechaEnNumero);
+        crearListaDefrecuencias(jLabelArchivoElegido.getText(),fechaEnNumero);
         llenarListaArchivos();
     }//GEN-LAST:event_jButtonComprimirActionPerformed
 
@@ -388,7 +402,7 @@ public class PanelHuffman extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator1;
     // End of variables declaration//GEN-END:variables
 
-    public void crearListaDefrecuencias(String archivoSeleccionado){
+    public void crearListaDefrecuencias(String archivoSeleccionado,String fechaEnnro){
         File aComprimir = new File(archivoSeleccionado);
         HashMap<Character,Float> frecuencias = new HashMap<>();
         frecuencias.put('\0',(float)1); //Le ponemos el caracter que indica fin de archivo
@@ -424,11 +438,12 @@ public class PanelHuffman extends javax.swing.JPanel {
                 frecsNodos.add(new Nodo(c,frecuencias.get(c)));//Voy creando los nodos para dejarlos ordenados en la linea de abajo 
             }
             Collections.sort(frecsNodos);//Ordeno de menor a mayor
-            Nodo raiz = getArbol(frecsNodos);
-            raiz.setCodigo("");
-            raiz.codificar(raiz); 
+            Nodo raiz = getArbol(frecsNodos); // arma el arbol con el orden correspondiente a las frecuencias 
+            raiz.setCodigo(""); 
+            raiz.codificar(raiz); // Codifica los nodos del arbol armado mas arriba
             String sinExtencion=archivoSeleccionado.substring(0,archivoSeleccionado.length()-4);
-            Object[] datos = escribirHuffman(sinExtencion,textoOriginal,raiz.imprimirArbol(raiz,""));
+            //Le pasamos el nombre del archivo sin la ext, el texto original y la tabla que vamos  a imprimir
+            Object[] datos = escribirHuffman(sinExtencion,textoOriginal,raiz.imprimirArbol(raiz,""),fechaEnnro);
             byte[] bytesDeTablaHuffman = (byte[])datos[0];
             byte[] bytesDeHuffman = (byte[])datos[1];
             mostrarArchivosVentanas(textoOriginal,bytesDeHuffman,sinExtencion,bytesDeTablaHuffman);
@@ -450,7 +465,21 @@ public class PanelHuffman extends javax.swing.JPanel {
         jLabelArchCreado.setText(sinExtencion+".HUF");
         jLabelTablaCreada.setText(sinExtencion+".TUF");
         jLabelTamBytesTabla.setText(tabla.length + " bytes");
-    }    
+    }
+    
+    public Date getFechaActual() throws MalformedURLException, IOException{
+        URL url = new URL("https://currentmillis.com/time/minutes-since-unix-epoch.php");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        long minutes = Long.parseLong(in.readLine());
+        in.close();
+        con.disconnect();
+        Instant instant = Instant.ofEpochSecond(minutes * 60);
+        Date fecha = Date.from(instant);
+        Integer.parseInt(""+(fecha.getYear()+1900)+(fecha.getMonth()+1)+(fecha.getDay()+5));
+        return fecha;
+    }
     /**
      * Recibe la ruta de un archivo comprimido
      * Recibe la extension del archivo
@@ -466,6 +495,18 @@ public class PanelHuffman extends javax.swing.JPanel {
             File tablaHuffman = new File(sinExtencion+".TUF");// Instancio el Archivo que voy a leer
             InputStream in = new FileInputStream(tablaHuffman);
             String codigo="";
+            /*Tengo que sacar la fecha aca si o si*/
+            int leyendoLaFecha;
+            char fech;
+            String fecha ="";
+            while((leyendoLaFecha = in.read())>= 0){
+                fech=(char)leyendoLaFecha;
+                if(fech!='\n')
+                    fecha +=fech;
+                else
+                    break;
+            }
+            System.out.println("Fecha LEida= " + fecha);
             char a; 
             int primerByteLeido;
             while((primerByteLeido = in.read())>= 0){

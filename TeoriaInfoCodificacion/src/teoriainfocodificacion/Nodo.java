@@ -160,11 +160,12 @@ public class Nodo implements Comparable<Nodo>{
         return getArregloDeBytes(bytesDinamico);
     }
     
-    public static Object[] escribirHuffman(String nombreArchivo,String texto, String tabla) throws IOException {
+    public static Object[] escribirHuffman(String nombreArchivo,String texto, String tabla,String fechaEnNro) throws IOException {
         File tablaHuffman = new File(nombreArchivo+".TUF");
         OutputStream out = new FileOutputStream(tablaHuffman);
         Object[] datos = new Object[2];
-        byte[] buf = tabla.getBytes();
+        String tablaYfecha = fechaEnNro +'\n' +tabla;//EN la primera linea tengo la fecha en entero
+        byte[] buf = tablaYfecha.getBytes();
         out.write(buf,0,buf.length); 
         out.close();//A la tabla de la escribo como está. 
         datos[0] = buf;
@@ -237,7 +238,12 @@ public class Nodo implements Comparable<Nodo>{
         }
         return lista.get(0);
     }
-
+/**
+ * Retorna la tabla char/codigo a101'\n'
+ * @param raiz
+ * @param tabla
+ * @return 
+ */
     public String imprimirArbol(Nodo raiz,String tabla){
         if(raiz !=null){
             if(raiz.getH0()==null && raiz.getH1()==null){   //si no tiene hijos 

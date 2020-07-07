@@ -177,7 +177,7 @@ public class FrameMenu extends javax.swing.JFrame {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+        
         
         URL url = new URL("https://currentmillis.com/time/minutes-since-unix-epoch.php");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -190,6 +190,7 @@ public class FrameMenu extends javax.swing.JFrame {
         System.out.println(instant.toString());
         Date fecha = Date.from(instant);
         System.out.println("Fecha " + fecha);
+        System.out.println("Fecha " + (fecha.getYear()+1900) +(fecha.getMonth()+1)  +(fecha.getDay()+5));
         
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -207,7 +208,7 @@ public class FrameMenu extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(FrameMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
+        //</editor-fold> */
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
